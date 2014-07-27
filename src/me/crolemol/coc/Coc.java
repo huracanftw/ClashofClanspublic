@@ -20,10 +20,14 @@ public class Coc extends JavaPlugin {
 	protected File mineFile;
 	protected File generalFile;
 	protected FileConfiguration generalConf;
+	protected static File UUIDFile;
+	protected static FileConfiguration UUIDConf;
 
 	@Override
 	public void onEnable() {
 		plugin = this;
+		UUIDFile = new File(plugin.getDataFolder() + "/data/", "ArenaUUIDS.yml");
+		UUIDConf = YamlConfiguration.loadConfiguration(UUIDFile);
 		if (!(this.getServer().getWorlds().contains(this.getServer().getWorld(
 				"coc")))) {
 			WorldCreator wc = new WorldCreator("coc");
@@ -50,8 +54,7 @@ public class Coc extends JavaPlugin {
 		ArenaApi.getUUIDConf().set("UUIDCounter", 0);
 		ArenaApi.getUUIDConf().options().copyDefaults(true);
 		try {
-			ArenaApi.getUUIDConf().save(ArenaApi.getUUIDFile());
-			this.getServer().getPlayer("crolemol").sendMessage(generalConf+"");
+			UUIDConf.save(UUIDFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -99,5 +102,11 @@ public class Coc extends JavaPlugin {
 	}
 	public static Coc getPlugin(){
 		return plugin;
+	}
+	public static File getUUIDFile(){
+		return UUIDFile;
+	}
+	public static FileConfiguration getUUIDConf(){
+		return UUIDConf;
 	}
 }

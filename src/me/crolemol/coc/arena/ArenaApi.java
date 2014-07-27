@@ -16,8 +16,7 @@ import com.sk89q.worldedit.data.DataException;
 
 public class ArenaApi {
 	private static Coc plugin = Coc.getPlugin();
-	protected static File UUIDFile;
-	protected static FileConfiguration UUIDConf;
+
 	
 	public Boolean isinownbase(Player player) throws DataException, IOException{
 		FileConfiguration dataconf = plugin.getdataconffile(player);
@@ -87,13 +86,10 @@ public class ArenaApi {
 		return loc;
 	} 
 	public static File getUUIDFile(){
-		UUIDFile = new File(plugin.getDataFolder() + "/data/", 
-				"ArenaUUIDS.yml");
-		return UUIDFile;
+		return Coc.getUUIDFile();
 	}
 	public static FileConfiguration getUUIDConf(){
-		UUIDConf = YamlConfiguration.loadConfiguration(getUUIDFile());
-		return UUIDConf;
+		return Coc.getUUIDConf();
 	}
 	public void giveplayerArenaUUID(Player player){
 		getUUIDConf().set(""+getUUIDConf().getInt("UUIDCounter")+1, player.getName());

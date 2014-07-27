@@ -1,0 +1,8 @@
+name : ClashOfClans
+main: me.crolemol.coc.Coc
+version: 1.0
+depends : WorldEdit
+commands:
+   coc:
+      description: This is the main ClashOfClans command.
+      usage: /coc [args]

@@ -8,7 +8,6 @@ import me.crolemol.coc.Coc;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.sk89q.worldedit.CuboidClipboard;
@@ -16,6 +15,8 @@ import com.sk89q.worldedit.data.DataException;
 
 public class ArenaApi {
 	private static Coc plugin = Coc.getPlugin();
+	public static File UUIDFile;
+	public static FileConfiguration UUIDConf;
 
 	
 	public Boolean isinownbase(Player player) throws DataException, IOException{
@@ -54,21 +55,24 @@ public class ArenaApi {
 			@SuppressWarnings("deprecation")
 			CuboidClipboard cc = CuboidClipboard.loadSchematic(new File(plugin.getDataFolder()+"/schematics/ground.schematic"));
 
-		int max_x  = (plugin.getgeneraldataconf().getInt("max x") - plugin.getgeneraldataconf().getInt("min x"))/cc.getLength();
-		int z_column = 0;
-		int edge = 0;
-		for (int column=0;loc.getBlockZ() > edge;column++){
-			edge = column * cc.getLength();
-			z_column = column;
+		int max_x  = plugin.getgeneraldataconf().getInt("max x")/cc.getLength();
+		int x_edge = cc.getLength();
+		int z_edge = cc.getLength();
+		int UUID= 1;
+		double max_columns = Math.ceil(UUIDConf.getInt("UUIDCounter")/max_x);
+		if(loc.getX() >= 0 || loc.getZ() >= 0){		for(int column=0;column<=max_columns;column++){
+			for(int row=1;row<= max_x;row++){
+				x_edge = row*cc.getLength();
+				if(loc.getBlockX()<x_edge && loc.getBlockZ()<z_edge){
+					return UUID;
+				}else{
+				UUID++;
+				}
+			}
+			}
 		}
-		int UUID=z_column*max_x;
-		int min_x = plugin.getgeneraldataconf().getInt("min x");
-		edge = 0;
-		for(int row=0;edge < loc.getBlockX();row++){
-			edge =min_x + row*cc.getLength();
-			UUID++;
-		}
-		return UUID;
+		return null;
+		
 		
 	}
 
@@ -78,7 +82,6 @@ public class ArenaApi {
 		return loc;
 	} 
 	public Location getArenaSpawn(int ArenaUUID){
-		plugin.getServer().getPlayer("crolemol").sendMessage(getUUIDConf().getString(ArenaUUID+"")+"");
 		@SuppressWarnings("deprecation")
 		OfflinePlayer player = plugin.getServer().getOfflinePlayer(getUUIDConf().getString(""+ArenaUUID));
 		FileConfiguration dataconf = plugin.getdataconffile(player);
@@ -86,13 +89,15 @@ public class ArenaApi {
 		return loc;
 	} 
 	public static File getUUIDFile(){
-		return Coc.getUUIDFile();
+		return UUIDFile;
 	}
 	public static FileConfiguration getUUIDConf(){
-		return Coc.getUUIDConf();
+		return UUIDConf;
 	}
 	public void giveplayerArenaUUID(Player player){
-		getUUIDConf().set(""+getUUIDConf().getInt("UUIDCounter")+1, player.getName());
+		int UUID = UUIDConf.getInt("UUIDCounter");
+		UUID++;
+		UUIDConf.set(""+UUID, player.getName());
 		try {
 			getUUIDConf().save(getUUIDFile());
 		} catch (IOException e) {

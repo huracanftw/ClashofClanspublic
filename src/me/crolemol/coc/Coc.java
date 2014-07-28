@@ -20,14 +20,12 @@ public class Coc extends JavaPlugin {
 	protected File mineFile;
 	protected File generalFile;
 	protected FileConfiguration generalConf;
-	protected static File UUIDFile;
-	protected static FileConfiguration UUIDConf;
 
 	@Override
 	public void onEnable() {
 		plugin = this;
-		UUIDFile = new File(plugin.getDataFolder() + "/data/", "ArenaUUIDS.yml");
-		UUIDConf = YamlConfiguration.loadConfiguration(UUIDFile);
+		ArenaApi.UUIDFile = new File(plugin.getDataFolder() + "/data/", "ArenaUUIDS.yml");
+		ArenaApi.UUIDConf = YamlConfiguration.loadConfiguration(ArenaApi.UUIDFile);
 		if (!(this.getServer().getWorlds().contains(this.getServer().getWorld(
 				"coc")))) {
 			WorldCreator wc = new WorldCreator("coc");
@@ -41,7 +39,6 @@ public class Coc extends JavaPlugin {
 		generalFile = new File(plugin.getDataFolder() + "/data", "general.yml");
 		generalConf = YamlConfiguration.loadConfiguration(generalFile);
 		generalConf.addDefault("max x", 2000);
-		generalConf.addDefault("min x", 2000);
 		generalConf.addDefault("nextground.x", 0);
 		generalConf.addDefault("nextground.y", 64);
 		generalConf.addDefault("nextground.z", 0);
@@ -54,7 +51,7 @@ public class Coc extends JavaPlugin {
 		ArenaApi.getUUIDConf().set("UUIDCounter", 0);
 		ArenaApi.getUUIDConf().options().copyDefaults(true);
 		try {
-			UUIDConf.save(UUIDFile);
+			ArenaApi.UUIDConf.save(ArenaApi.UUIDFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -102,11 +99,5 @@ public class Coc extends JavaPlugin {
 	}
 	public static Coc getPlugin(){
 		return plugin;
-	}
-	public static File getUUIDFile(){
-		return UUIDFile;
-	}
-	public static FileConfiguration getUUIDConf(){
-		return UUIDConf;
 	}
 }

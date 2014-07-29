@@ -40,7 +40,7 @@ public class ArenaApi {
 		}
 }
 	
-	public Player playerisinwhosebase(Player player) throws DataException, IOException{
+	public Player playerisInWhoseBase(Player player) throws DataException, IOException{
 		if (plugin.getServer().getOnlinePlayers().contains(player)){
 			 int UUID = getArenaUUID(player.getLocation());
 			String name= getUUIDConf().getString(""+UUID);
@@ -81,9 +81,16 @@ public class ArenaApi {
 		Location loc = new Location(plugin.getServer().getWorld("coc"), dataconf.getInt("spawn.x"), dataconf.getInt("spawn.y") , dataconf.getInt("spawn.z"));
 		return loc;
 	} 
+	@SuppressWarnings("deprecation")
 	public Location getArenaSpawn(int ArenaUUID){
-		@SuppressWarnings("deprecation")
-		OfflinePlayer player = plugin.getServer().getOfflinePlayer(getUUIDConf().getString(""+ArenaUUID));
+		OfflinePlayer player;
+		if(plugin.getServer().getOnlinePlayers().contains(plugin.getServer().getPlayer(getUUIDConf().getString(""+ArenaUUID)))){
+			Player player2 = plugin.getServer().getPlayer(getUUIDConf().getString(""+ArenaUUID));
+			player = player2;
+		}else{
+			OfflinePlayer player2 = plugin.getServer().getOfflinePlayer(getUUIDConf().getString(""+ArenaUUID));
+			player = player2;
+		}
 		FileConfiguration dataconf = plugin.getdataconffile(player);
 		Location loc = new Location(plugin.getServer().getWorld("coc"), dataconf.getInt("spawn.x"), dataconf.getInt("spawn.y") , dataconf.getInt("spawn.z"));
 		return loc;
@@ -98,6 +105,7 @@ public class ArenaApi {
 		int UUID = UUIDConf.getInt("UUIDCounter");
 		UUID++;
 		UUIDConf.set(""+UUID, player.getName());
+		UUIDConf.set("UUIDCounter", UUIDConf.getInt("UUIDCounter")+1);
 		try {
 			getUUIDConf().save(getUUIDFile());
 		} catch (IOException e) {

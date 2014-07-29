@@ -53,21 +53,21 @@ public class CocCommandExecutor implements CommandExecutor {
 							| IOException e) {
 						e.printStackTrace();
 					}
-					dataconf.set("spawn.x", vec.getBlockX()+28);
-					dataconf.set("spawn.y", 64);
-					dataconf.set("spawn.z", vec.getBlockZ()+28);
-					try {
-						dataconf.save(Coc.plugin.getdatafile(player));
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
 					CuboidClipboard cc;
 					try {
 						cc = CuboidClipboard.loadSchematic(new File(Coc.plugin.getDataFolder()+"/schematics/ground.schematic"));
 						Coc.plugin.generalConf.set("nextground.x", Coc.plugin.getgeneraldataconf().getInt("nextground.x")+cc.getLength());
 					if(Coc.plugin.getgeneraldataconf().getInt("nextground.x") > Coc.plugin.getgeneraldataconf().getInt("max_x")){
-						Coc.plugin.getgeneraldataconf().set("nextground.x", Coc.plugin.getgeneraldataconf().getInt("min_x"));
+						Coc.plugin.getgeneraldataconf().set("nextground.x", 0);
 						Coc.plugin.getgeneraldataconf().set("nextground.z", Coc.plugin.getgeneraldataconf().getInt("nextground.z")+cc.getWidth());
+					}
+					dataconf.set("spawn.x", vec.getBlockX()+cc.getLength()/2);
+					dataconf.set("spawn.y", 64);
+					dataconf.set("spawn.z", vec.getBlockZ()+cc.getLength()/2);
+					try {
+						dataconf.save(Coc.plugin.getdatafile(player));
+					} catch (IOException e) {
+						e.printStackTrace();
 					}
 					} catch (DataException | IOException e) {
 						e.printStackTrace();

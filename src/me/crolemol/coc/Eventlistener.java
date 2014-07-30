@@ -4,28 +4,41 @@ import java.io.File;
 import java.io.IOException;
 
 import me.crolemol.coc.arena.ArenaApi;
+import me.crolemol.coc.arena.BuildingShop;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
+
+import scoreboard.ScoreboardApi;
 
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.data.DataException;
 
+@SuppressWarnings("deprecation")
 public class Eventlistener implements Listener {
 	private Coc plugin = Coc.plugin;
 	private ArenaApi arenaApi = new ArenaApi();
+	
 	@EventHandler
 	public void onplayermove(PlayerMoveEvent event) throws DataException, IOException {
 		if (event.getPlayer().getWorld().equals(plugin.getServer().getWorld("coc"))) {
 			if(!(event.getPlayer().hasPermission("coc.edge.bypass"))){
 			Location loc = event.getPlayer().getLocation();
-			@SuppressWarnings("deprecation")
 			CuboidClipboard cc = CuboidClipboard.loadSchematic(new File(plugin.getDataFolder()+"/schematics/ground.schematic"));
 			int ArenaUUID = arenaApi.getArenaUUID(loc); // throws DataException and IOException
 			Location spawn = arenaApi.getArenaSpawn(ArenaUUID);
@@ -38,6 +51,85 @@ public class Eventlistener implements Listener {
 	}
 		}
 	}
+	@EventHandler
+	public void onentityspawn(CreatureSpawnEvent event){
+		if(event.getLocation().getWorld().equals(plugin.getServer().getWorld("coc"))){
+			if(event.getEntity().getType() == null){
+				return;
+			}
+			if(!(event.getEntity().getType().equals(EntityType.VILLAGER))){
+				event.setCancelled(true);
+			}
+		}
+	}
+	@EventHandler
+	public void onPlayerInteract(PlayerInteractEvent event){
+		Action action = event.getAction();
+		ItemStack is= event.getItem();
+		
+		if(action== Action.PHYSICAL || is == null || is.getType().equals(Material.AIR)){
+			return;
+		}
+		if(!(event.getPlayer().getWorld().equals(plugin.getServer().getWorld("coc")))){
+			return;
+		}
+		if(!(is.hasItemMeta())){
+			return;
+		}
+		if(is.getType() == Material.BOOK && is.getItemMeta().getDisplayName().equals("Shop")){
+			BuildingShop shop = new BuildingShop();
+			shop.OpenMainShopGUI(event.getPlayer());
+		}
+	}
+	@EventHandler 
+	public void onInventoryClick(InventoryClickEvent event){
+		if(ChatColor.stripColor(event.getInventory().getName()).equalsIgnoreCase("BuildingShop")){
+			Player player = (Player) event.getWhoClicked();
+			event.setCancelled(true);
+			if(event.getCurrentItem()==null || !event.getCurrentItem().hasItemMeta()){
+				return;
+			}
+			switch(event.getCurrentItem().getType()){
+			case DIAMOND_SWORD:
+				break;
+			case IRON_CHESTPLATE:
+				break;
+			case FLOWER_POT_ITEM:
+				break;
+			case IRON_PICKAXE:
+				break;
+			case DIAMOND_CHESTPLATE:
+				break;
+			case DIAMOND:
+				break;
+			default: player.closeInventory();
+				
+			}
+			
+		}
+		
+	}
+	@EventHandler
+	public void onWorldChange(PlayerChangedWorldEvent event){
+		if(!event.getPlayer().getWorld().equals(plugin.getServer().getWorld("coc"))){
+			ScoreboardApi.removeCurrencyBoardt(event.getPlayer());
+			return;
+		}
+		if(event.getPlayer().getWorld().equals((plugin.getServer().getWorld("coc")))){
+			event.getPlayer().setHealth(20);
+			event.getPlayer().setFoodLevel(20);
+		}
+	}
+	@EventHandler
+	public void onFoodlevelChange(FoodLevelChangeEvent event){
+		if(event.getEntity() instanceof Player){
+			Player player = (Player) event.getEntity();
+			if(player.getWorld().equals(plugin.getServer().getWorld("coc"))){
+				event.setCancelled(true);
+			}
+		}
+	}
+
 	private Vector getEdgeVector(Player player) throws DataException, IOException{
 		int ArenaUUID = arenaApi.getArenaUUID(player.getLocation());//throws DataException,IOException
 		Location spawn = arenaApi.getArenaSpawn(ArenaUUID);
@@ -69,4 +161,6 @@ public class Eventlistener implements Listener {
 	    }
 	    return false;
 	}
+
+
 }

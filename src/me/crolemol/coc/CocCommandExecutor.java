@@ -4,15 +4,21 @@ import java.io.File;
 import java.io.IOException;
 
 import me.crolemol.coc.arena.ArenaApi;
+import me.crolemol.coc.arena.InteractStick;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import scoreboard.ScoreboardApi;
 
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.EditSession;
@@ -38,6 +44,14 @@ public class CocCommandExecutor implements CommandExecutor {
 							dataconf.getInt("spawn.y"),
 							dataconf.getInt("spawn.z"));
 					player.teleport(tploc);
+					player.getInventory().clear();
+					ItemStack book = new ItemStack(Material.BOOK);
+					ItemMeta bookMeta = book.getItemMeta();
+					bookMeta.setDisplayName("Shop");
+					book.setItemMeta(bookMeta);
+					player.getInventory().setItem(8, book);
+					InteractStick.getInteractStick(player);
+					ScoreboardApi.setCurrencyBoard(player);
 					return true;
 				} else {
 					Vector vec = new Vector(generalconf.getInt("nextground.x"),
@@ -64,6 +78,27 @@ public class CocCommandExecutor implements CommandExecutor {
 					dataconf.set("spawn.x", vec.getBlockX()+cc.getLength()/2);
 					dataconf.set("spawn.y", 64);
 					dataconf.set("spawn.z", vec.getBlockZ()+cc.getLength()/2);
+					dataconf.set("Gold", 1000);
+					dataconf.set("Elixir", 1000);
+					dataconf.set("Gems", 50);
+					dataconf.set("buildingcounter", 1);
+					Vector townhallvec = new Vector(dataconf.getInt("spawn.x")-6,
+							dataconf.getInt("spawn.y"),
+							dataconf.getInt("spawn.z")+5);
+					File townhallschema = new File(Coc.plugin.getDataFolder()
+							+ "/schematics/townhall", "townhall_lv1.schematic");
+					try {
+						pasteschematic(Coc.plugin.getServer().getWorld("coc"),
+								townhallschema, townhallvec);
+					} catch (MaxChangedBlocksException | DataException
+							| IOException e) {
+						e.printStackTrace();
+					}
+					dataconf.set("townhall.location.x", townhallvec.getBlockX());
+					dataconf.set("townhall.location.y", townhallvec.getBlockY());
+					dataconf.set("townhall.location.z", townhallvec.getBlockZ());
+					dataconf.set("townhall.level", 1);
+					
 					try {
 						dataconf.save(Coc.plugin.getdatafile(player));
 					} catch (IOException e) {
@@ -77,7 +112,7 @@ public class CocCommandExecutor implements CommandExecutor {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-
+					
 					ArenaApi arenaApi = new ArenaApi();
 					arenaApi.giveplayerArenaUUID(player);
 					return true;

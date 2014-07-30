@@ -36,6 +36,7 @@ public class Coc extends JavaPlugin {
 			plugin.getServer().createWorld(wc);
 		}
 		this.saveResource("schematics/ground.schematic", false);
+		this.saveResource("schematics/townhall/townhall_lv1.schematic", false);
 		generalFile = new File(plugin.getDataFolder() + "/data", "general.yml");
 		generalConf = YamlConfiguration.loadConfiguration(generalFile);
 		generalConf.addDefault("max x", 2000);

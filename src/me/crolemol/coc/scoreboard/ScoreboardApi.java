@@ -1,4 +1,4 @@
-package scoreboard;
+package me.crolemol.coc.scoreboard;
 
 import me.crolemol.coc.Coc;
 

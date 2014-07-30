@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import me.crolemol.coc.arena.ArenaApi;
 import me.crolemol.coc.arena.BuildingShop;
+import me.crolemol.coc.scoreboard.ScoreboardApi;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -23,8 +24,6 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
-
-import scoreboard.ScoreboardApi;
 
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.data.DataException;

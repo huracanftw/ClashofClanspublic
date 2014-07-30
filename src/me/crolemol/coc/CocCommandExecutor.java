@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import me.crolemol.coc.arena.ArenaApi;
 import me.crolemol.coc.arena.InteractStick;
+import me.crolemol.coc.scoreboard.ScoreboardApi;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -18,7 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import scoreboard.ScoreboardApi;
+
 
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.EditSession;

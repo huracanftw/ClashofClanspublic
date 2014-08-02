@@ -3,7 +3,8 @@ package me.crolemol.coc;
 import java.io.File;
 import java.io.IOException;
 
-import me.crolemol.coc.arena.ArenaApi;
+import me.crolemol.coc.arena.Base;
+import me.crolemol.coc.arena.panels.BuildingPanels;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.WorldCreator;
@@ -14,7 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class Coc extends JavaPlugin {
+public class Coc extends JavaPlugin{
 	protected static Coc plugin;
 	protected FileConfiguration mineConf;
 	protected File mineFile;
@@ -24,8 +25,8 @@ public class Coc extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		plugin = this;
-		ArenaApi.UUIDFile = new File(plugin.getDataFolder() + "/data/", "ArenaUUIDS.yml");
-		ArenaApi.UUIDConf = YamlConfiguration.loadConfiguration(ArenaApi.UUIDFile);
+		Base.UUIDFile = new File(plugin.getDataFolder() + "/data/", "ArenaUUIDS.yml");
+		Base.UUIDConf = YamlConfiguration.loadConfiguration(Base.UUIDFile);
 		if (!(this.getServer().getWorlds().contains(this.getServer().getWorld(
 				"coc")))) {
 			WorldCreator wc = new WorldCreator("coc");
@@ -37,6 +38,11 @@ public class Coc extends JavaPlugin {
 		}
 		this.saveResource("schematics/ground.schematic", false);
 		this.saveResource("schematics/townhall/townhall_lv1.schematic", false);
+		this.saveResource("schematics/townhall/townhall_lv2.schematic", false);
+		this.saveResource("schematics/townhall/townhall_lv3.schematic", false);
+		this.saveResource("schematics/townhall/townhall_lv4.schematic", false);
+		this.saveResource("schematics/townhall/townhall_lv5.schematic", false);
+		this.saveResource("schematics/townhall/townhall_lv6.schematic", false);
 		generalFile = new File(plugin.getDataFolder() + "/data", "general.yml");
 		generalConf = YamlConfiguration.loadConfiguration(generalFile);
 		generalConf.addDefault("max x", 2000);
@@ -49,15 +55,17 @@ public class Coc extends JavaPlugin {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		ArenaApi.getUUIDConf().set("UUIDCounter", 0);
-		ArenaApi.getUUIDConf().options().copyDefaults(true);
+		Base.UUIDConf.set("UUIDCounter", 0);
+		Base.UUIDConf.options().copyDefaults(true);
 		try {
-			ArenaApi.UUIDConf.save(ArenaApi.UUIDFile);
+			Base.UUIDConf.save(Base.UUIDFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		this.getCommand("coc").setExecutor(new CocCommandExecutor());
 		this.getServer().getPluginManager().registerEvents(new Eventlistener(), this);
+		this.getServer().getPluginManager().registerEvents(new BuildingPanels(), this);
+
 	}
 
 	@Override

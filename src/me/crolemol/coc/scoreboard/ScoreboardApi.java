@@ -17,7 +17,7 @@ public class ScoreboardApi {
 	private static ScoreboardManager manager = Bukkit.getScoreboardManager();
 	
 	@SuppressWarnings("deprecation")
-	public static void setCurrencyBoard(Player player){
+	public void setCurrencyBoard(Player player){
 		FileConfiguration dataconf = plugin.getdataconffile(player);
 		Scoreboard board = manager.getNewScoreboard();
 		Objective objective = board.registerNewObjective("test", "dummy");

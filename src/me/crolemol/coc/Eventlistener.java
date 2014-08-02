@@ -2,9 +2,12 @@ package me.crolemol.coc;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 
-import me.crolemol.coc.arena.ArenaApi;
-import me.crolemol.coc.arena.BuildingShop;
+import me.crolemol.coc.arena.Base;
+import me.crolemol.coc.arena.InteractStick;
+import me.crolemol.coc.arena.panels.BuildingPanels;
+import me.crolemol.coc.arena.panels.BuildingShop;
 import me.crolemol.coc.scoreboard.ScoreboardApi;
 
 import org.bukkit.ChatColor;
@@ -15,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -31,7 +35,7 @@ import com.sk89q.worldedit.data.DataException;
 @SuppressWarnings("deprecation")
 public class Eventlistener implements Listener {
 	private Coc plugin = Coc.plugin;
-	private ArenaApi arenaApi = new ArenaApi();
+	private Base base = new Base();
 	
 	@EventHandler
 	public void onplayermove(PlayerMoveEvent event) throws DataException, IOException {
@@ -39,8 +43,8 @@ public class Eventlistener implements Listener {
 			if(!(event.getPlayer().hasPermission("coc.edge.bypass"))){
 			Location loc = event.getPlayer().getLocation();
 			CuboidClipboard cc = CuboidClipboard.loadSchematic(new File(plugin.getDataFolder()+"/schematics/ground.schematic"));
-			int ArenaUUID = arenaApi.getArenaUUID(loc); // throws DataException and IOException
-			Location spawn = arenaApi.getArenaSpawn(ArenaUUID);
+			int ArenaUUID = base.getArenaUUID(loc); // throws DataException and IOException
+			Location spawn = base.getArenaSpawn(ArenaUUID);
 			Location corner1 = new Location(plugin.getServer().getWorld("coc"),spawn.getX()+cc.getLength()/2-10, spawn.getY(), spawn.getZ()+cc.getLength()/2-10);
 			Location corner2 = new Location(plugin.getServer().getWorld("coc"),spawn.getX()-cc.getLength()/2+10, spawn.getY(), spawn.getZ()-cc.getLength()/2+10);
 			if(checkIfInArea(corner1,corner2,loc)==false && (!(event.getPlayer().getVelocity().equals(getEdgeVector(event.getPlayer()))))){
@@ -62,7 +66,7 @@ public class Eventlistener implements Listener {
 		}
 	}
 	@EventHandler
-	public void onPlayerInteract(PlayerInteractEvent event){
+	public void onPlayerInteract(PlayerInteractEvent event) throws ParseException{
 		Action action = event.getAction();
 		ItemStack is= event.getItem();
 		
@@ -78,6 +82,23 @@ public class Eventlistener implements Listener {
 		if(is.getType() == Material.BOOK && is.getItemMeta().getDisplayName().equals("Shop")){
 			BuildingShop shop = new BuildingShop();
 			shop.OpenMainShopGUI(event.getPlayer());
+			return;
+		}
+		if(is.getType() == Material.STICK && is.getItemMeta().getDisplayName().equals("InteractStick")){
+			if(!(event.getPlayer().getWorld().equals(plugin.getServer().getWorld("coc")))){
+				return;
+			}
+			if(!(event.getAction() == Action.LEFT_CLICK_BLOCK) && (!(event.getAction() == Action.RIGHT_CLICK_BLOCK))){
+				return;
+			}
+			BuildingPanels panel = new BuildingPanels();
+			InteractStick stick = new InteractStick();
+			String[] building = stick.Interacted(event.getClickedBlock().getLocation(), event.getPlayer());
+			if(building[0].equals("none") && building[1].equals("0")){
+				return;
+			}
+			panel.openBuildingPanel(building[0], building[1], event.getPlayer());
+			return;
 		}
 	}
 	@EventHandler 
@@ -128,10 +149,18 @@ public class Eventlistener implements Listener {
 			}
 		}
 	}
+	@EventHandler
+	public void onBlockBreak(BlockBreakEvent event){
+		if(event.getPlayer().getWorld().equals(plugin.getServer().getWorld("coc"))){
+			if(!event.getPlayer().hasPermission("coc.block.break")){
+				event.setCancelled(true);
+			}
+		}
+	}
 
 	private Vector getEdgeVector(Player player) throws DataException, IOException{
-		int ArenaUUID = arenaApi.getArenaUUID(player.getLocation());//throws DataException,IOException
-		Location spawn = arenaApi.getArenaSpawn(ArenaUUID);
+		int ArenaUUID = base.getArenaUUID(player.getLocation());//throws DataException,IOException
+		Location spawn = base.getArenaSpawn(ArenaUUID);
 		Vector start = new Vector(player.getLocation().getBlockX(),player.getLocation().getBlockY(),player.getLocation().getBlockZ());
 		Vector direction = spawn.toVector().subtract(player.getLocation().toVector());
 		BlockIterator  bi = new BlockIterator(player.getWorld(), start, direction, 0, (int)player.getLocation().distance(spawn));

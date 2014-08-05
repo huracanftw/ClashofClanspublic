@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 
 import me.crolemol.coc.arena.Base;
+import me.crolemol.coc.arena.RelativeBuilding;
 import me.crolemol.coc.arena.panels.BuildingPanels;
+import me.crolemol.coc.arena.panels.BuildingShop;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.WorldCreator;
@@ -36,13 +38,7 @@ public class Coc extends JavaPlugin{
 			wc.createWorld();
 			plugin.getServer().createWorld(wc);
 		}
-		this.saveResource("schematics/ground.schematic", false);
-		this.saveResource("schematics/townhall/townhall_lv1.schematic", false);
-		this.saveResource("schematics/townhall/townhall_lv2.schematic", false);
-		this.saveResource("schematics/townhall/townhall_lv3.schematic", false);
-		this.saveResource("schematics/townhall/townhall_lv4.schematic", false);
-		this.saveResource("schematics/townhall/townhall_lv5.schematic", false);
-		this.saveResource("schematics/townhall/townhall_lv6.schematic", false);
+		saveresources();
 		generalFile = new File(plugin.getDataFolder() + "/data", "general.yml");
 		generalConf = YamlConfiguration.loadConfiguration(generalFile);
 		generalConf.addDefault("max x", 2000);
@@ -65,7 +61,10 @@ public class Coc extends JavaPlugin{
 		this.getCommand("coc").setExecutor(new CocCommandExecutor());
 		this.getServer().getPluginManager().registerEvents(new Eventlistener(), this);
 		this.getServer().getPluginManager().registerEvents(new BuildingPanels(), this);
+		this.getServer().getPluginManager().registerEvents(new BuildingShop(), this);
+		this.getServer().getPluginManager().registerEvents(new RelativeBuilding(), this);
 
+	
 	}
 
 	@Override
@@ -108,5 +107,41 @@ public class Coc extends JavaPlugin{
 	}
 	public static Coc getPlugin(){
 		return plugin;
+	}
+	private void saveresources(){
+		File ground = new File(this.getDataFolder()+"schematics/ground.schematic");
+		File townhall_lv1 = new File(this.getDataFolder()+"schematics/townhall/townhall_lv1.schematic");
+		File townhall_lv2 = new File(this.getDataFolder()+"schematics/townhall/townhall_lv2.schematic");
+		File townhall_lv3 = new File(this.getDataFolder()+"schematics/townhall/townhall_lv3.schematic");
+		File townhall_lv4 = new File(this.getDataFolder()+"schematics/townhall/townhall_lv4.schematic");
+		File townhall_lv5 = new File(this.getDataFolder()+"schematics/townhall/townhall_lv5.schematic");
+		File townhall_lv6 = new File(this.getDataFolder()+"schematics/townhall/townhall_lv6.schematic");
+		File goldmine_lv1 = new File(this.getDataFolder()+"schematics/goldmine/goldmine_lv1.schematic");
+		File goldmine_lv2 = new File(this.getDataFolder()+"schematics/goldmine/goldmine_lv2.schematic");
+		File goldmine_lv3 = new File(this.getDataFolder()+"schematics/goldmine/goldmine_lv3.schematic");
+		File goldmine_lv4 = new File(this.getDataFolder()+"schematics/goldmine/goldmine_lv4.schematic");
+		File goldmine_lv5 = new File(this.getDataFolder()+"schematics/goldmine/goldmine_lv5.schematic");
+		File goldmine_lv6 = new File(this.getDataFolder()+"schematics/goldmine/goldmine_lv6.schematic");
+		File goldmine_lv7 = new File(this.getDataFolder()+"schematics/goldmine/goldmine_lv7.schematic");
+		File goldmine_lv8 = new File(this.getDataFolder()+"schematics/goldmine/goldmine_lv8.schematic");
+		File goldmine_lv9 = new File(this.getDataFolder()+"schematics/goldmine/goldmine_lv9.schematic");
+		
+		if(!ground.exists()){this.saveResource("schematics/ground.schematic", false);}
+		if(!townhall_lv1.exists()){this.saveResource("schematics/townhall/townhall_lv1.schematic", false);}
+		if(!townhall_lv2.exists()){this.saveResource("schematics/townhall/townhall_lv2.schematic", false);}
+		if(!townhall_lv3.exists()){this.saveResource("schematics/townhall/townhall_lv3.schematic", false);}
+		if(!townhall_lv4.exists()){this.saveResource("schematics/townhall/townhall_lv4.schematic", false);}
+		if(!townhall_lv5.exists()){this.saveResource("schematics/townhall/townhall_lv5.schematic", false);}
+		if(!townhall_lv6.exists()){this.saveResource("schematics/townhall/townhall_lv6.schematic", false);}	
+		
+		if(!goldmine_lv1.exists()){this.saveResource("schematics/goldmine/goldmine_lv1.schematic", false);}
+		if(!goldmine_lv2.exists()){this.saveResource("schematics/goldmine/goldmine_lv2.schematic", false);}
+		if(!goldmine_lv3.exists()){this.saveResource("schematics/goldmine/goldmine_lv3.schematic", false);}
+		if(!goldmine_lv4.exists()){this.saveResource("schematics/goldmine/goldmine_lv4.schematic", false);}
+		if(!goldmine_lv5.exists()){this.saveResource("schematics/goldmine/goldmine_lv5.schematic", false);}
+		if(!goldmine_lv6.exists()){this.saveResource("schematics/goldmine/goldmine_lv6.schematic", false);}
+		if(!goldmine_lv7.exists()){this.saveResource("schematics/goldmine/goldmine_lv7.schematic", false);}
+		if(!goldmine_lv8.exists()){this.saveResource("schematics/goldmine/goldmine_lv8.schematic", false);}
+		if(!goldmine_lv9.exists()){this.saveResource("schematics/goldmine/goldmine_lv9.schematic", false);}
 	}
 }

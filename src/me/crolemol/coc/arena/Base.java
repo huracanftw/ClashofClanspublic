@@ -68,7 +68,8 @@ public class Base {
 	public enum Buildingspecs{
 		//length is x axis
 		//width is z axis
-		townhall("townhall",12,10);
+		townhall("townhall",12,10),
+		goldmine("goldmine",8,8);
 		private int returnlength;
 		private int returnwidth;
 		private String returnname;

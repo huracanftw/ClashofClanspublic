@@ -37,4 +37,55 @@ public class Specs {
 			return health2;
 		}
 	}
+	
+	public enum specsGoldMine{
+		lv1(150,1,7,500,200,400,1),
+		lv2(300,5,17,1000,400,450,1),
+		lv3(700,15,30,1500,600,500,2),
+		lv4(1400,60,60,2500,800,550,2),
+		lv5(3000,120,84,10000,1000,590,3),
+		lv6(7000,360,146,20000,1300,610,3),
+		lv7(14000,720,207,30000,1600,630,4),
+		lv8(28000,1440,293,50000,1900,660,4),
+		lv9(56000,2880,415,75000,2200,680,5),
+		lv10(84000,4320,509,100000,2500,710,5),
+		lv11(168000,5760,587,150000,3000,750,7);
+		int cost;
+		int time;
+		int exp;
+		int capacity;
+		int production;
+		int health;
+		int level;
+		specsGoldMine(int cost2,int time2,int exp2, int capacity2,int production2,int health2,int level2){
+			cost = cost2;
+			time = time2;
+			exp = exp2;
+			capacity = capacity2;
+			production = production2;
+			health = health2;
+			level = level2;
+		}
+		public int getElixirCost(){
+			return cost;
+		}
+		public int getGainExp(){
+			return exp;
+		}
+		public int getUpgradeTime(){
+			return time;
+		}
+		public int getProduction(){
+			return production;
+		}
+		public int getCapacity(){
+			return capacity;
+		}
+		public int getHealth(){
+			return health;
+		}
+		public int getMinTownhallLevel(){
+			return level;
+		}
+		}
 }

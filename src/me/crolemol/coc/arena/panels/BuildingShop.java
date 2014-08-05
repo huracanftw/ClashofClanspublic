@@ -1,17 +1,30 @@
 package me.crolemol.coc.arena.panels;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+
+import me.crolemol.coc.Coc;
+import me.crolemol.coc.arena.RelativeBuilding;
+import me.crolemol.coc.arena.UpgradeBuilding;
+import me.crolemol.coc.arena.panels.Specs.specsTownhall;
+import me.crolemol.coc.economy.Resources;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public class BuildingShop {
+public class BuildingShop implements Listener{
 	public void OpenMainShopGUI(Player player){
 		Inventory inv = Bukkit.createInventory(null, 27, "BuildingShop");
 		
@@ -63,6 +76,47 @@ public class BuildingShop {
 		
 		
 		
+	}
+	private void openResourcesPanel(Player player){
+		Inventory inv = Bukkit.createInventory(null, 18, "RecoursesBuildingShop");
+		
+		ItemStack Goldmine = new ItemStack(Material.GOLD_NUGGET);
+		ItemMeta GoldmineMeta = Goldmine.getItemMeta();
+		GoldmineMeta.setDisplayName(ChatColor.LIGHT_PURPLE+"Goldmine");
+		Goldmine.setItemMeta(GoldmineMeta);
+		inv.setItem(2, Goldmine);
+		player.openInventory(inv);
+	}
+	@EventHandler
+	private void OnInventoryClick(InventoryClickEvent event){
+		if(ChatColor.stripColor(event.getInventory().getName()).equalsIgnoreCase("BuildingShop")){
+			event.setCancelled(true);
+			if(event.getCurrentItem()==null || !event.getCurrentItem().hasItemMeta()){
+				return;
+			}
+			switch(event.getCurrentItem().getType()){
+			case IRON_PICKAXE:
+				openResourcesPanel((Player) event.getWhoClicked());
+				break;
+			default: event.getWhoClicked().closeInventory();
+		}
+		}
+		if(ChatColor.stripColor(event.getInventory().getName()).equalsIgnoreCase("RecoursesBuildingShop")){
+			event.setCancelled(true);
+			if(event.getCurrentItem()==null || !event.getCurrentItem().hasItemMeta()){
+				return;
+			}
+			switch(event.getCurrentItem().getType()){
+			case GOLD_NUGGET:
+				RelativeBuilding rb = new RelativeBuilding();
+				rb.pasteRelativeBuilding("goldmine", 1, (Player)event.getWhoClicked());
+				event.getWhoClicked().closeInventory();
+				break;
+			default: event.getWhoClicked().closeInventory();
+				
+			}
+			
+		}
 	}
 
 }

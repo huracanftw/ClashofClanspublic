@@ -1,21 +1,13 @@
 package me.crolemol.coc.arena.panels;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
-import me.crolemol.coc.Coc;
-import me.crolemol.coc.arena.RelativeBuilding;
-import me.crolemol.coc.arena.UpgradeBuilding;
-import me.crolemol.coc.arena.panels.Specs.specsTownhall;
-import me.crolemol.coc.economy.Resources;
+import me.crolemol.coc.arena.Building;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -108,8 +100,8 @@ public class BuildingShop implements Listener{
 			}
 			switch(event.getCurrentItem().getType()){
 			case GOLD_NUGGET:
-				RelativeBuilding rb = new RelativeBuilding();
-				rb.pasteRelativeBuilding("goldmine", 1, (Player)event.getWhoClicked());
+				Building rb = new Building();
+				rb.placeRelativeBuilding("goldmine", 1, (Player)event.getWhoClicked());
 				event.getWhoClicked().closeInventory();
 				break;
 			default: event.getWhoClicked().closeInventory();

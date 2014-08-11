@@ -2,11 +2,9 @@ package me.crolemol.coc;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
 
 import me.crolemol.coc.arena.Base;
 import me.crolemol.coc.arena.InteractStick;
-import me.crolemol.coc.arena.panels.BuildingPanels;
 import me.crolemol.coc.arena.panels.BuildingShop;
 import me.crolemol.coc.scoreboard.ScoreboardApi;
 
@@ -21,6 +19,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -66,7 +65,7 @@ public class Eventlistener implements Listener {
 		}
 	}
 	@EventHandler
-	public void onPlayerInteract(PlayerInteractEvent event) throws ParseException{
+	public void onPlayerInteract(PlayerInteractEvent event){
 		Action action = event.getAction();
 		ItemStack is= event.getItem();
 		
@@ -85,19 +84,11 @@ public class Eventlistener implements Listener {
 			return;
 		}
 		if(is.getType() == Material.STICK && is.getItemMeta().getDisplayName().equals("InteractStick")){
-			if(!(event.getPlayer().getWorld().equals(plugin.getServer().getWorld("coc")))){
-				return;
-			}
 			if(!(event.getAction() == Action.LEFT_CLICK_BLOCK) && (!(event.getAction() == Action.RIGHT_CLICK_BLOCK))){
 				return;
 			}
-			BuildingPanels panel = new BuildingPanels();
 			InteractStick stick = new InteractStick();
-			String[] building = stick.Interacted(event.getClickedBlock().getLocation(), event.getPlayer());
-			if(building[0].equals("none") && building[1].equals("0")){
-				return;
-			}
-			panel.openBuildingPanel(building[0], building[1], event.getPlayer());
+			stick.Interacted(event.getClickedBlock().getLocation(), event.getPlayer());
 			return;
 		}
 	}
@@ -147,6 +138,12 @@ public class Eventlistener implements Listener {
 			if(player.getWorld().equals(plugin.getServer().getWorld("coc"))){
 				event.setCancelled(true);
 			}
+		}
+	}
+	@EventHandler
+	public void onitemSpawn(ItemSpawnEvent event){
+		if(event.getEntity().getWorld().equals(plugin.getServer().getWorld("coc"))){
+			event.setCancelled(true);
 		}
 	}
 	@EventHandler

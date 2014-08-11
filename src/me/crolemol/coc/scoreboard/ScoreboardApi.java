@@ -13,12 +13,11 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 
 public class ScoreboardApi {
-	private static Coc plugin = Coc.getPlugin();
 	private static ScoreboardManager manager = Bukkit.getScoreboardManager();
 	
 	@SuppressWarnings("deprecation")
 	public void setCurrencyBoard(Player player){
-		FileConfiguration dataconf = plugin.getdataconffile(player);
+		FileConfiguration dataconf = Coc.getdataconffile(player);
 		Scoreboard board = manager.getNewScoreboard();
 		Objective objective = board.registerNewObjective("test", "dummy");
 		objective.setDisplaySlot(DisplaySlot.SIDEBAR);

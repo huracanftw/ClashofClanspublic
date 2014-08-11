@@ -13,13 +13,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class UpgradeBuilding{
 	Coc plugin  = Coc.getPlugin();
-	public void startNewUpgrade(final String BuildingName,final String buildingID, final Player BuildingOwner){
-		final FileConfiguration dataconf = plugin.getdataconffile(BuildingOwner);
+	public void startNewUpgrade(final String BuildingName,final Integer BuildingID, final Player BuildingOwner){
+		Coc.getPlugin();
+		final FileConfiguration dataconf = Coc.getdataconffile(BuildingOwner);
 		final specsTownhall[] spec = Specs.specsTownhall.values();
 		Calendar cal = Calendar.getInstance();
-		dataconf.set(BuildingName+"."+buildingID+".upgrade", cal.getTimeInMillis()/60/1000);
+		dataconf.set(BuildingName+"."+BuildingID+".upgrade", cal.getTimeInMillis()/60/1000);
 		try {
-			dataconf.save(plugin.getdatafile(BuildingOwner));
+			dataconf.save(Coc.getdatafile(BuildingOwner));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -29,24 +30,25 @@ public class UpgradeBuilding{
 			public void run() {
 				Calendar cal = Calendar.getInstance();
 				Long caltime = cal.getTimeInMillis()/60/1000;
-				Long cal2 = dataconf.getLong(BuildingName+"."+buildingID+".upgrade");
+				Long cal2 = dataconf.getLong(BuildingName+"."+BuildingID+".upgrade");
 				Long time1 = timeBetweenDates(cal2, caltime);
-				int time2 = spec[dataconf.getInt(BuildingName+"."+buildingID+".level")].getUpgradeTime();
+				int time2 = spec[dataconf.getInt(BuildingName+"."+BuildingID+".level")].getUpgradeTime();
 				Long time3 = time2 - time1;
 				if(time3 <=0){
-					FinishUpgrade(BuildingName, buildingID, BuildingOwner);
+					FinishUpgrade(BuildingName, BuildingID, BuildingOwner);
 					this.cancel();
 				}
 				
 			}
 			}.runTaskTimer(plugin, 0, 1200L);
 	}
-	public void FinishUpgrade(String BuildingName,String buildingID, Player BuildingOwner){
-		FileConfiguration dataconf = plugin.getdataconffile(BuildingOwner);
+	public void FinishUpgrade(String BuildingName,Integer buildingID, Player BuildingOwner){
+		Coc.getPlugin();
+		FileConfiguration dataconf = Coc.getdataconffile(BuildingOwner);
 		dataconf.set(BuildingName+"."+buildingID+".level", dataconf.getInt(BuildingName+"."+buildingID+".level")+1);
 		dataconf.set(BuildingName+"."+buildingID+".upgrade", null);
 		try {
-			dataconf.save(plugin.getdatafile(BuildingOwner));
+			dataconf.save(Coc.getdatafile(BuildingOwner));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

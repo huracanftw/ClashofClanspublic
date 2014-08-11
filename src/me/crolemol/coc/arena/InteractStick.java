@@ -5,7 +5,9 @@ import java.util.List;
 
 import me.crolemol.coc.Coc;
 import me.crolemol.coc.arena.Base.Buildingspecs;
+import me.crolemol.coc.events.BuildingInteractEvent;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -26,30 +28,23 @@ public class InteractStick {
 		InteractStick.setItemMeta(InteractStickMeta);
 		player.getInventory().setItem(0, InteractStick);
 	}
-	public String[] Interacted(Location targetblock,Player player){
+	public void Interacted(Location targetblock,Player player){
 		Base arena = new Base();
 		List<String> contains = arena.containsbuildings(player);
-		FileConfiguration dataconf = plugin.getdataconffile(player);
+		FileConfiguration dataconf = Coc.getdataconffile(player);
 		for(Buildingspecs building : Buildingspecs.values()){
 			if(contains.contains(building.getName())){
 				for(int counter=1;counter<=arena.getAmountofBuilding(building.getName(),player);counter++){
 				Location loc1 = new Location(plugin.getServer().getWorld("coc"), dataconf.getInt(building.getName()+"."+counter+".location.x"), dataconf.getInt(building.getName()+"."+counter+".location.y"), dataconf.getInt(building.getName()+"."+counter+".location.z"));
-				Location loc2 = new Location(plugin.getServer().getWorld("coc"), loc1.getBlockX()+building.getLength(), loc1.getBlockY(), loc1.getBlockZ()+building.getWidth());
+				Location loc2 = new Location(plugin.getServer().getWorld("coc"), loc1.getBlockX()+building.getWidth(), loc1.getBlockY(), loc1.getBlockZ()+building.getLength());
 				if(checkIfInArea(loc1,loc2,targetblock) == true){
-					String[] NameAndId = new String[2];
-					NameAndId[0] = building.getName();
-					NameAndId[1] = counter+"";
-					return NameAndId;
-					}
+					BuildingInteractEvent event = new BuildingInteractEvent(building.getName(), counter, player);
+					Bukkit.getServer().getPluginManager().callEvent(event);
+					return;
+				}
 				}
 			}
 		}
-		// returns none and 0 when the block is not an instance of a building
-		String[] None = new String[2];
-		None[0] = "none";
-		None[1] = "0";
-		return None;
-		
 	}
 	
 	

@@ -3,10 +3,15 @@ package me.crolemol.coc;
 import java.io.File;
 import java.io.IOException;
 
+<<<<<<< HEAD
 import me.crolemol.coc.arena.Buildingspecs;
 import me.crolemol.coc.arena.InteractStick;
 import me.crolemol.coc.arena.building.Goldmine;
 import me.crolemol.coc.arena.building.RelativeBuilding;
+=======
+import me.crolemol.coc.arena.Base;
+import me.crolemol.coc.arena.Building;
+>>>>>>> origin/master
 import me.crolemol.coc.arena.panels.BuildingPanels;
 import me.crolemol.coc.arena.panels.BuildingShop;
 
@@ -22,7 +27,11 @@ public class Coc extends JavaPlugin {
 	protected static Coc plugin;
 	private static FileConfiguration mineConf;
 	private static File mineFile;
+<<<<<<< HEAD
 	private File generalFile;
+=======
+	protected File generalFile;
+>>>>>>> origin/master
 	protected FileConfiguration generalConf;
 	protected  File UUIDFile;
 	protected  FileConfiguration UUIDConf;
@@ -30,8 +39,13 @@ public class Coc extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		plugin = this;
+<<<<<<< HEAD
 		UUIDFile = new File(this.getDataFolder() + "/data/ArenaUUIDS.yml");
 		UUIDConf = YamlConfiguration.loadConfiguration(UUIDFile);
+=======
+		Base.UUIDFile = new File(this.getDataFolder() + "/data/ArenaUUIDS.yml");
+		Base.UUIDConf = YamlConfiguration.loadConfiguration(Base.UUIDFile);
+>>>>>>> origin/master
 		if (!(this.getServer().getWorlds().contains(this.getServer().getWorld(
 				"coc")))) {
 			WorldCreator wc = new WorldCreator("coc");
@@ -54,19 +68,37 @@ public class Coc extends JavaPlugin {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+<<<<<<< HEAD
 		UUIDConf.addDefault("UUIDCounter", 0);
 		UUIDConf.options().copyDefaults(true);
 		try {
 			UUIDConf.save(UUIDFile);
+=======
+		Base.UUIDConf.addDefault("UUIDCounter", 0);
+		Base.UUIDConf.options().copyDefaults(true);
+		try {
+			Base.UUIDConf.save(Base.UUIDFile);
+>>>>>>> origin/master
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		this.getCommand("coc").setExecutor(new CocCommandExecutor());
+<<<<<<< HEAD
 		this.getServer().getPluginManager().registerEvents(new Eventlistener(), this);
 		this.getServer().getPluginManager().registerEvents(new BuildingPanels(), this);
 		this.getServer().getPluginManager().registerEvents(new BuildingShop(), this);
 		this.getServer().getPluginManager().registerEvents(new RelativeBuilding(new Goldmine(null, null, 0, 0)), this);
 		this.getServer().getPluginManager().registerEvents(new InteractStick(), this);
+=======
+		this.getServer().getPluginManager()
+				.registerEvents(new Eventlistener(), this);
+		this.getServer().getPluginManager()
+				.registerEvents(new BuildingPanels(), this);
+		this.getServer().getPluginManager()
+				.registerEvents(new BuildingShop(), this);
+		this.getServer().getPluginManager()
+				.registerEvents(new Building(), this);
+>>>>>>> origin/master
 
 	}
 
@@ -80,7 +112,18 @@ public class Coc extends JavaPlugin {
 		return new Nullchunkgenerator();
 	}
 
+<<<<<<< HEAD
 
+=======
+	public static FileConfiguration getdataconffile(Player player) {
+		mineFile = new File(getPlugin().getDataFolder() + "/data/players/",
+				player.getName() + ".yml");
+		mineConf = YamlConfiguration.loadConfiguration(mineFile);
+		return mineConf;
+
+	}
+
+>>>>>>> origin/master
 	public static FileConfiguration getdataconffile(OfflinePlayer player) {
 		mineFile = new File(plugin.getDataFolder() + "/data/players/",
 				player.getName() + ".yml");
@@ -89,7 +132,11 @@ public class Coc extends JavaPlugin {
 
 	}
 
+<<<<<<< HEAD
 	public static File getdatafile(OfflinePlayer player) {
+=======
+	public static File getdatafile(Player player) {
+>>>>>>> origin/master
 		mineFile = new File(plugin.getDataFolder() + "/data/players",
 				player.getName() + ".yml");
 		return mineFile;
@@ -97,6 +144,7 @@ public class Coc extends JavaPlugin {
 	}
 
 	public FileConfiguration getgeneraldataconf() {
+<<<<<<< HEAD
 		generalConf = YamlConfiguration.loadConfiguration(getGeneralFile());
 		return generalConf;
 	}
@@ -130,5 +178,126 @@ public class Coc extends JavaPlugin {
 			}
 		}
 		
+=======
+		generalFile = new File(getPlugin().getDataFolder() + "/data", "general.yml");
+		generalConf = YamlConfiguration.loadConfiguration(generalFile);
+		return generalConf;
+	}
+
+	public static Coc getPlugin() {
+		return plugin;
+	}
+
+	private void saveresources() {
+		File ground = new File(this.getDataFolder()
+				+ "schematics/ground.schematic");
+		File townhall_lv1 = new File(this.getDataFolder()
+				+ "schematics/townhall/townhall_lv1.schematic");
+		File townhall_lv2 = new File(this.getDataFolder()
+				+ "schematics/townhall/townhall_lv2.schematic");
+		File townhall_lv3 = new File(this.getDataFolder()
+				+ "schematics/townhall/townhall_lv3.schematic");
+		File townhall_lv4 = new File(this.getDataFolder()
+				+ "schematics/townhall/townhall_lv4.schematic");
+		File townhall_lv5 = new File(this.getDataFolder()
+				+ "schematics/townhall/townhall_lv5.schematic");
+		File townhall_lv6 = new File(this.getDataFolder()
+				+ "schematics/townhall/townhall_lv6.schematic");
+		File goldmine_lv1 = new File(this.getDataFolder()
+				+ "schematics/goldmine/goldmine_lv1.schematic");
+		File goldmine_lv2 = new File(this.getDataFolder()
+				+ "schematics/goldmine/goldmine_lv2.schematic");
+		File goldmine_lv3 = new File(this.getDataFolder()
+				+ "schematics/goldmine/goldmine_lv3.schematic");
+		File goldmine_lv4 = new File(this.getDataFolder()
+				+ "schematics/goldmine/goldmine_lv4.schematic");
+		File goldmine_lv5 = new File(this.getDataFolder()
+				+ "schematics/goldmine/goldmine_lv5.schematic");
+		File goldmine_lv6 = new File(this.getDataFolder()
+				+ "schematics/goldmine/goldmine_lv6.schematic");
+		File goldmine_lv7 = new File(this.getDataFolder()
+				+ "schematics/goldmine/goldmine_lv7.schematic");
+		File goldmine_lv8 = new File(this.getDataFolder()
+				+ "schematics/goldmine/goldmine_lv8.schematic");
+		File goldmine_lv9 = new File(this.getDataFolder()
+				+ "schematics/goldmine/goldmine_lv9.schematic");
+		File goldmine_lv10 = new File(this.getDataFolder()
+				+ "schematics/goldmine/goldmine_lv9.schematic");
+		File goldmine_lv11 = new File(this.getDataFolder()
+				+ "schematics/goldmine/goldmine_lv9.schematic");
+
+		if (!ground.exists()) {
+			this.saveResource("schematics/ground.schematic", false);
+		}
+		if (!townhall_lv1.exists()) {
+			this.saveResource("schematics/townhall/townhall_lv1.schematic",
+					false);
+		}
+		if (!townhall_lv2.exists()) {
+			this.saveResource("schematics/townhall/townhall_lv2.schematic",
+					false);
+		}
+		if (!townhall_lv3.exists()) {
+			this.saveResource("schematics/townhall/townhall_lv3.schematic",
+					false);
+		}
+		if (!townhall_lv4.exists()) {
+			this.saveResource("schematics/townhall/townhall_lv4.schematic",
+					false);
+		}
+		if (!townhall_lv5.exists()) {
+			this.saveResource("schematics/townhall/townhall_lv5.schematic",
+					false);
+		}
+		if (!townhall_lv6.exists()) {
+			this.saveResource("schematics/townhall/townhall_lv6.schematic",
+					false);
+		}
+
+		if (!goldmine_lv1.exists()) {
+			this.saveResource("schematics/goldmine/goldmine_lv1.schematic",
+					false);
+		}
+		if (!goldmine_lv2.exists()) {
+			this.saveResource("schematics/goldmine/goldmine_lv2.schematic",
+					false);
+		}
+		if (!goldmine_lv3.exists()) {
+			this.saveResource("schematics/goldmine/goldmine_lv3.schematic",
+					false);
+		}
+		if (!goldmine_lv4.exists()) {
+			this.saveResource("schematics/goldmine/goldmine_lv4.schematic",
+					false);
+		}
+		if (!goldmine_lv5.exists()) {
+			this.saveResource("schematics/goldmine/goldmine_lv5.schematic",
+					false);
+		}
+		if (!goldmine_lv6.exists()) {
+			this.saveResource("schematics/goldmine/goldmine_lv6.schematic",
+					false);
+		}
+		if (!goldmine_lv7.exists()) {
+			this.saveResource("schematics/goldmine/goldmine_lv7.schematic",
+					false);
+		}
+		if (!goldmine_lv8.exists()) {
+			this.saveResource("schematics/goldmine/goldmine_lv8.schematic",
+					false);
+		}
+		if (!goldmine_lv9.exists()) {
+			this.saveResource("schematics/goldmine/goldmine_lv9.schematic",
+					false);
+		}
+		if (!goldmine_lv10.exists()) {
+			this.saveResource("schematics/goldmine/goldmine_lv10.schematic",
+					false);
+		}
+		if (!goldmine_lv11.exists()) {
+			this.saveResource("schematics/goldmine/goldmine_lv11.schematic",
+					false);
+		}
+>>>>>>> origin/master
 	}
 }

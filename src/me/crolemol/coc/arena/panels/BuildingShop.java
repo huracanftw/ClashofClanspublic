@@ -3,8 +3,12 @@ package me.crolemol.coc.arena.panels;
 import java.util.ArrayList;
 import java.util.List;
 
+<<<<<<< HEAD
 import me.crolemol.coc.arena.building.Goldmine;
 import me.crolemol.coc.arena.building.RelativeBuilding;
+=======
+import me.crolemol.coc.arena.Building;
+>>>>>>> origin/master
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -101,8 +105,13 @@ public class BuildingShop implements Listener{
 			}
 			switch(event.getCurrentItem().getType()){
 			case GOLD_NUGGET:
+<<<<<<< HEAD
 				RelativeBuilding rb = new RelativeBuilding(new Goldmine((Player) event.getWhoClicked(), null, 1, 0));
 				rb.putRelativeBuilding((Player)event.getWhoClicked());
+=======
+				Building rb = new Building();
+				rb.placeRelativeBuilding("goldmine", 1, (Player)event.getWhoClicked());
+>>>>>>> origin/master
 				event.getWhoClicked().closeInventory();
 				break;
 			default: event.getWhoClicked().closeInventory();

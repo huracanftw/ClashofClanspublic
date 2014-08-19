@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.IOException;
 
 import me.crolemol.coc.arena.Base;
+<<<<<<< HEAD
+=======
+import me.crolemol.coc.arena.InteractStick;
+>>>>>>> origin/master
 import me.crolemol.coc.arena.panels.BuildingShop;
 import me.crolemol.coc.scoreboard.ScoreboardApi;
 
@@ -33,20 +37,32 @@ import com.sk89q.worldedit.data.DataException;
 @SuppressWarnings("deprecation")
 public class Eventlistener implements Listener {
 	private Coc plugin = Coc.plugin;
+<<<<<<< HEAD
+=======
+	private Base base = new Base();
+>>>>>>> origin/master
 	
 	@EventHandler
 	public void onplayermove(PlayerMoveEvent event) throws DataException, IOException {
 		if (event.getPlayer().getWorld().equals(plugin.getServer().getWorld("coc"))) {
 			if(!(event.getPlayer().hasPermission("coc.edge.bypass"))){
+<<<<<<< HEAD
 			Base base = Base.getBase(event.getPlayer().getLocation());	
 			Location loc = event.getPlayer().getLocation();
 			CuboidClipboard cc = CuboidClipboard.loadSchematic(new File(plugin.getDataFolder()+"/schematics/ground.schematic"));
 			Location spawn = base.getArenaSpawn();
+=======
+			Location loc = event.getPlayer().getLocation();
+			CuboidClipboard cc = CuboidClipboard.loadSchematic(new File(plugin.getDataFolder()+"/schematics/ground.schematic"));
+			int ArenaUUID = base.getArenaUUID(loc); // throws DataException and IOException
+			Location spawn = base.getArenaSpawn(ArenaUUID);
+>>>>>>> origin/master
 			Location corner1 = new Location(plugin.getServer().getWorld("coc"),spawn.getX()+cc.getLength()/2-10, spawn.getY(), spawn.getZ()+cc.getLength()/2-10);
 			Location corner2 = new Location(plugin.getServer().getWorld("coc"),spawn.getX()-cc.getLength()/2+10, spawn.getY(), spawn.getZ()-cc.getLength()/2+10);
 			if(checkIfInArea(corner1,corner2,loc)==false && (!(event.getPlayer().getVelocity().equals(getEdgeVector(event.getPlayer()))))){
 				event.getPlayer().setVelocity(getEdgeVector(event.getPlayer()));
 				event.getPlayer().sendMessage(ChatColor.RED+"[ClashofClans] you cannot leave your base this way!");
+<<<<<<< HEAD
 			}
 	}
 		}
@@ -137,6 +153,106 @@ public class Eventlistener implements Listener {
 		}
 	}
 	@EventHandler
+=======
+			}
+	}
+		}
+	}
+	@EventHandler
+	public void onentityspawn(CreatureSpawnEvent event){
+		if(event.getLocation().getWorld().equals(plugin.getServer().getWorld("coc"))){
+			if(event.getEntity().getType() == null){
+				return;
+			}
+			if(!(event.getEntity().getType().equals(EntityType.VILLAGER))){
+				event.setCancelled(true);
+			}
+		}
+	}
+	@EventHandler
+	public void onPlayerInteract(PlayerInteractEvent event){
+		Action action = event.getAction();
+		ItemStack is= event.getItem();
+		
+		if(action== Action.PHYSICAL || is == null || is.getType().equals(Material.AIR)){
+			return;
+		}
+		if(!(event.getPlayer().getWorld().equals(plugin.getServer().getWorld("coc")))){
+			return;
+		}
+		if(!(is.hasItemMeta())){
+			return;
+		}
+		if(is.getType() == Material.BOOK && is.getItemMeta().getDisplayName().equals("Shop")){
+			BuildingShop shop = new BuildingShop();
+			shop.OpenMainShopGUI(event.getPlayer());
+			return;
+		}
+		if(is.getType() == Material.STICK && is.getItemMeta().getDisplayName().equals("InteractStick")){
+			if(!(event.getAction() == Action.LEFT_CLICK_BLOCK) && (!(event.getAction() == Action.RIGHT_CLICK_BLOCK))){
+				return;
+			}
+			InteractStick stick = new InteractStick();
+			stick.Interacted(event.getClickedBlock().getLocation(), event.getPlayer());
+			return;
+		}
+	}
+	@EventHandler 
+	public void onInventoryClick(InventoryClickEvent event){
+		if(ChatColor.stripColor(event.getInventory().getName()).equalsIgnoreCase("BuildingShop")){
+			Player player = (Player) event.getWhoClicked();
+			event.setCancelled(true);
+			if(event.getCurrentItem()==null || !event.getCurrentItem().hasItemMeta()){
+				return;
+			}
+			switch(event.getCurrentItem().getType()){
+			case DIAMOND_SWORD:
+				break;
+			case IRON_CHESTPLATE:
+				break;
+			case FLOWER_POT_ITEM:
+				break;
+			case IRON_PICKAXE:
+				break;
+			case DIAMOND_CHESTPLATE:
+				break;
+			case DIAMOND:
+				break;
+			default: player.closeInventory();
+				
+			}
+			
+		}
+		
+	}
+	@EventHandler
+	public void onWorldChange(PlayerChangedWorldEvent event){
+		if(!event.getPlayer().getWorld().equals(plugin.getServer().getWorld("coc"))){
+			ScoreboardApi.removeCurrencyBoardt(event.getPlayer());
+			return;
+		}
+		if(event.getPlayer().getWorld().equals((plugin.getServer().getWorld("coc")))){
+			event.getPlayer().setHealth(20);
+			event.getPlayer().setFoodLevel(20);
+		}
+	}
+	@EventHandler
+	public void onFoodlevelChange(FoodLevelChangeEvent event){
+		if(event.getEntity() instanceof Player){
+			Player player = (Player) event.getEntity();
+			if(player.getWorld().equals(plugin.getServer().getWorld("coc"))){
+				event.setCancelled(true);
+			}
+		}
+	}
+	@EventHandler
+	public void onitemSpawn(ItemSpawnEvent event){
+		if(event.getEntity().getWorld().equals(plugin.getServer().getWorld("coc"))){
+			event.setCancelled(true);
+		}
+	}
+	@EventHandler
+>>>>>>> origin/master
 	public void onBlockBreak(BlockBreakEvent event){
 		if(event.getPlayer().getWorld().equals(plugin.getServer().getWorld("coc"))){
 			if(!event.getPlayer().hasPermission("coc.block.break")){
@@ -145,9 +261,15 @@ public class Eventlistener implements Listener {
 		}
 	}
 
+<<<<<<< HEAD
 	private Vector getEdgeVector(Player player){
 		Base base = Base.getBase(player.getLocation());
 		Location spawn = base.getArenaSpawn();
+=======
+	private Vector getEdgeVector(Player player) throws DataException, IOException{
+		int ArenaUUID = base.getArenaUUID(player.getLocation());//throws DataException,IOException
+		Location spawn = base.getArenaSpawn(ArenaUUID);
+>>>>>>> origin/master
 		Vector start = new Vector(player.getLocation().getBlockX(),player.getLocation().getBlockY(),player.getLocation().getBlockZ());
 		Vector direction = spawn.toVector().subtract(player.getLocation().toVector());
 		BlockIterator  bi = new BlockIterator(player.getWorld(), start, direction, 0, (int)player.getLocation().distance(spawn));

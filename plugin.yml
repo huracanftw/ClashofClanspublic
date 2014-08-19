@@ -6,3 +6,10 @@ commands:
    coc:
       description: This is the main ClashOfClans command.
       usage: /coc [args]
+permissions:
+    coc.block.break:
+         description: Allows you to break blocks in the ClashofClands world
+         default: op
+    coc.edge.bypass:
+         description: Allows you to bypass the arena edges
+         default: op

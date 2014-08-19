@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import me.crolemol.coc.Coc;
+<<<<<<< HEAD
 import me.crolemol.coc.arena.building.Goldmine;
 import me.crolemol.coc.arena.building.Townhall;
 import me.crolemol.coc.arena.building.UpgradeBuilding;
@@ -17,6 +18,13 @@ import me.crolemol.coc.arena.events.BuildingInteractEvent;
 import me.crolemol.coc.arena.panels.Specs.specsGoldMine;
 import me.crolemol.coc.arena.panels.Specs.specsTownhall;
 import me.crolemol.coc.economy.Resources;
+=======
+import me.crolemol.coc.arena.UpgradeBuilding;
+import me.crolemol.coc.arena.panels.Specs.specsGoldMine;
+import me.crolemol.coc.arena.panels.Specs.specsTownhall;
+import me.crolemol.coc.economy.Resources;
+import me.crolemol.coc.events.BuildingInteractEvent;
+>>>>>>> origin/master
 import me.crolemol.coc.utils.TimetoGemCalc;
 
 import org.bukkit.Bukkit;
@@ -36,6 +44,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class BuildingPanels implements Listener{
 	private Map<String,Integer> currentBuildingID = new HashMap<>();
+<<<<<<< HEAD
 	public void openBuildingPanel(Building building){
 		if(building.getBuildingName().equals("elixir_collector")){
 			return;
@@ -46,15 +55,34 @@ public class BuildingPanels implements Listener{
 		}
 		if(building instanceof Goldmine){
 			openGoldMinePanel((Goldmine) building);
+=======
+	public void openBuildingPanel(String BuildingName, int buildingID,Player owner){
+		if(BuildingName.equals("elixir_collector") || BuildingName.equals("gold_mine")){
+			return;
+		}
+		if(BuildingName.equals("townhall")){
+			openTownhallPanel(owner);
+			return;
+		}
+		if(BuildingName.equals("goldmine")){
+			openGoldMinePanel(buildingID, owner);
+>>>>>>> origin/master
 			return;
 		}
 		
 	}
+<<<<<<< HEAD
 	private void openGoldMinePanel(Goldmine building){
 		specsGoldMine[] spec = Specs.specsGoldMine.values();
 		Goldmine goldmine = Goldmine.getGoldmine(building.getBuildingID(), building.getOwner());
 		Coc.getPlugin();
 		FileConfiguration dataconf = Coc.getdataconffile(building.getOwner());
+=======
+	private void openGoldMinePanel(int BuildingNumber, Player Buildingowner){
+		specsGoldMine[] spec = Specs.specsGoldMine.values();
+		Coc.getPlugin();
+		FileConfiguration dataconf = Coc.getdataconffile(Buildingowner);
+>>>>>>> origin/master
 		Inventory inv = Bukkit.createInventory(null, 9, "Goldmine");
 		
 		ItemStack Info = new ItemStack(Material.BOOK_AND_QUILL);
@@ -63,6 +91,7 @@ public class BuildingPanels implements Listener{
 		List<String> list = new ArrayList<String>();
 		list.add("a recoursebuilding who lets you collect gold,");
 		list.add("upgrade your goldmine to gain more gold per hour");
+<<<<<<< HEAD
 		list.add("Health: "+ spec[dataconf.getInt("goldmine."+building.getBuildingID()+".level")-1].getHealth());
 		list.add("Production per hour: "+ spec[dataconf.getInt("goldmine."+building.getBuildingID()+".level")-1].getProduction());
 		list.add("Capacity: "+ spec[dataconf.getInt("goldmine."+building.getBuildingID()+".level")-1].getCapacity());
@@ -77,10 +106,19 @@ public class BuildingPanels implements Listener{
 		CollectMeta.setLore(list4);
 		Collect.setItemMeta(CollectMeta);
 		
+=======
+		list.add("Health: "+ spec[dataconf.getInt("goldmine."+BuildingNumber+".level")-1].getHealth());
+		list.add("Production per hour: "+ spec[dataconf.getInt("goldmine."+BuildingNumber+".level")-1].getProduction());
+		list.add("Capacity: "+ spec[dataconf.getInt("goldmine."+BuildingNumber+".level")-1].getCapacity());
+		InfoMeta.setLore(list);
+		Info.setItemMeta(InfoMeta);
+		
+>>>>>>> origin/master
 		ItemStack Upgrade = new ItemStack(Material.IRON_PICKAXE);
 		ItemMeta UpgradeMeta = Upgrade.getItemMeta();
 		UpgradeMeta.setDisplayName(ChatColor.LIGHT_PURPLE+"Upgrade");
 		List<String> list2 = new ArrayList<String>();
+<<<<<<< HEAD
 		if(!dataconf.contains("goldmine."+building.getBuildingID()+".upgrade")){
 		list2.add("Upgrade your goldmine to");
 		list2.add("increase the production and capacity,");
@@ -93,6 +131,19 @@ public class BuildingPanels implements Listener{
 			Long cal2 = dataconf.getLong("goldmine."+building.getBuildingID()+".upgrade");
 			Long time1 = timeBetweenDates(cal2, caltime);
 			int time2 = spec[dataconf.getInt("goldmine."+building.getBuildingID()+".level")].getUpgradeTime();
+=======
+		if(!dataconf.contains("goldmine."+BuildingNumber+".upgrade")){
+		list2.add("Upgrade your goldmine to");
+		list2.add("increase the production and capacity,");
+		list2.add("Costs:");
+		list2.add("Elixir: "+ spec[dataconf.getInt("goldmine."+BuildingNumber+".level")].getElixirCost());
+		}else{
+			Calendar cal = Calendar.getInstance();
+			Long caltime = cal.getTimeInMillis()/60/1000;
+			Long cal2 = dataconf.getLong("goldmine."+BuildingNumber+".upgrade");
+			Long time1 = timeBetweenDates(cal2, caltime);
+			int time2 = spec[dataconf.getInt("goldmine."+BuildingNumber+".level")].getUpgradeTime();
+>>>>>>> origin/master
 			Long time3 = time2 - time1;
 			list2.add("Time remain:");
 			list2.add(LongtoSimpleString(time3));
@@ -106,9 +157,15 @@ public class BuildingPanels implements Listener{
 		SpeedMeta.setDisplayName(ChatColor.LIGHT_PURPLE+"Speed up");
 		Calendar cal = Calendar.getInstance();
 		Long caltime = cal.getTimeInMillis()/60/1000;
+<<<<<<< HEAD
 		Long cal2 = dataconf.getLong("goldmine."+building.getBuildingID()+".upgrade");
 		Long time1 = timeBetweenDates(cal2, caltime);
 		int time2 = spec[dataconf.getInt("goldmine."+building.getBuildingID()+".level")].getUpgradeTime();
+=======
+		Long cal2 = dataconf.getLong("goldmine."+BuildingNumber+".upgrade");
+		Long time1 = timeBetweenDates(cal2, caltime);
+		int time2 = spec[dataconf.getInt("goldmine."+BuildingNumber+".level")].getUpgradeTime();
+>>>>>>> origin/master
 		Long time3 = time2 - time1;
 		List<String> list3 = new ArrayList<String>();
 		list3.add("Speed up the building progress,");
@@ -119,6 +176,7 @@ public class BuildingPanels implements Listener{
 		Speed.setItemMeta(SpeedMeta);
 		
 		inv.setItem(0, Info);
+<<<<<<< HEAD
 		inv.setItem(1, Collect);
 		if(dataconf.getInt("goldmine."+building.getBuildingID()+".level")!=11){
 		inv.setItem(8, Upgrade);
@@ -134,6 +192,20 @@ public class BuildingPanels implements Listener{
 		specsTownhall[] spec = Specs.specsTownhall.values();
 		Coc.getPlugin();
 		FileConfiguration dataconf = Coc.getdataconffile(building.getOwner());
+=======
+		inv.setItem(8, Upgrade);
+		if(dataconf.contains("goldmine."+BuildingNumber+".upgrade")){
+			inv.setItem(7, Speed);
+		}
+		Buildingowner.openInventory(inv);
+		
+		
+	}
+	private void openTownhallPanel(Player owner){
+		specsTownhall[] spec = Specs.specsTownhall.values();
+		Coc.getPlugin();
+		FileConfiguration dataconf = Coc.getdataconffile(owner);
+>>>>>>> origin/master
 		Inventory inv = Bukkit.createInventory(null, 9, "Townhall");
 		ItemStack Info = new ItemStack(Material.BOOK_AND_QUILL);
 		ItemMeta InfoMeta = Info.getItemMeta();
@@ -153,7 +225,10 @@ public class BuildingPanels implements Listener{
 		list2.add("Upgrade your townhall");
 		list2.add("Costs:");
 		list2.add("Gold: "+ spec[dataconf.getInt("townhall.1.level")].getGoldPrice());
+<<<<<<< HEAD
 		list2.add("Time: " + LongtoSimpleString(spec[dataconf.getInt("townhall.1.level")].getUpgradeTime()));
+=======
+>>>>>>> origin/master
 		}else{
 			Calendar cal = Calendar.getInstance();
 			Long caltime = cal.getTimeInMillis()/60/1000;
@@ -189,7 +264,11 @@ public class BuildingPanels implements Listener{
 		if(dataconf.contains("townhall.1.upgrade")){
 			inv.setItem(7, Speed);
 		}
+<<<<<<< HEAD
 		building.getOwner().openInventory(inv);
+=======
+		owner.openInventory(inv);
+>>>>>>> origin/master
 		
 	}
 	
@@ -212,18 +291,27 @@ public class BuildingPanels implements Listener{
 		switch(event.getCurrentItem().getType()){
 		case BOOK_AND_QUILL:
 			break;
+<<<<<<< HEAD
 		case GOLD_NUGGET:
 			Goldmine goldmine = Goldmine.getGoldmine(currentBuildingID.get(event.getWhoClicked().getName()), (Player)event.getWhoClicked());
 			goldmine.Collect();
 			event.getWhoClicked().closeInventory();
 			break;
+=======
+>>>>>>> origin/master
 		case IRON_PICKAXE:
 			specsGoldMine[] spec = Specs.specsGoldMine.values();
 			if(!dataconf.contains("goldmine."+currentBuildingID.get(event.getWhoClicked().getName())+".upgrade") && dataconf.getInt("Elixir") >= spec[dataconf.getInt("goldmine."+currentBuildingID.get(event.getWhoClicked().getName())+".level")].getElixirCost()){
 			UpgradeBuilding upgrade = new UpgradeBuilding();
 			upgrade.startNewUpgrade("goldmine", currentBuildingID.get(event.getWhoClicked().getName()), (Player)event.getWhoClicked());
+<<<<<<< HEAD
 
 			Resources.takeElixir((Player)event.getWhoClicked(), spec[dataconf.getInt("goldmine."+currentBuildingID.get(event.getWhoClicked().getName())+".level")].getElixirCost());
+=======
+			Resources rc = new Resources();
+
+			rc.takeElixir((Player)event.getWhoClicked(), spec[dataconf.getInt("goldmine."+currentBuildingID.get(event.getWhoClicked().getName())+".level")].getElixirCost());
+>>>>>>> origin/master
 			event.getWhoClicked().closeInventory();}
 			break;
 		case EMERALD:
@@ -236,9 +324,15 @@ public class BuildingPanels implements Listener{
 			Long time1 = timeBetweenDates(cal2, caltime);
 			int time2 = spec2[dataconf.getInt("goldmine."+currentBuildingID.get(event.getWhoClicked().getName())+".level")].getUpgradeTime();
 			Long time3 = time2 - time1;
+<<<<<<< HEAD
 			new Resources();
 			TimetoGemCalc calc = new TimetoGemCalc();
 			Resources.takeGems((Player)event.getWhoClicked(), calc.Calc(time3*60));
+=======
+			Resources re = new Resources();
+			TimetoGemCalc calc = new TimetoGemCalc();
+			re.takeGems((Player)event.getWhoClicked(), calc.Calc(time3*60));
+>>>>>>> origin/master
 			event.getWhoClicked().closeInventory();
 			break;
 		default: player.closeInventory();
@@ -261,9 +355,15 @@ public class BuildingPanels implements Listener{
 			if(!dataconf.contains("townhall.1.upgrade") && dataconf.getInt("Gold") >= spec[dataconf.getInt("townhall.1.level")].getGoldPrice()){
 			UpgradeBuilding upgrade = new UpgradeBuilding();
 			upgrade.startNewUpgrade("townhall", 1, (Player)event.getWhoClicked());
+<<<<<<< HEAD
 			new Resources();
 
 			Resources.takeGold((Player)event.getWhoClicked(), spec[dataconf.getInt("townhall.1.level")].getGoldPrice());
+=======
+			Resources rc = new Resources();
+
+			rc.takeGold((Player)event.getWhoClicked(), spec[dataconf.getInt("townhall.1.level")].getGoldPrice());
+>>>>>>> origin/master
 			event.getWhoClicked().closeInventory();}
 			break;
 		case EMERALD:
@@ -276,9 +376,15 @@ public class BuildingPanels implements Listener{
 			Long time1 = timeBetweenDates(cal2, caltime);
 			int time2 = spec2[dataconf.getInt("townhall.1.level")].getUpgradeTime();
 			Long time3 = time2 - time1;
+<<<<<<< HEAD
 			new Resources();
 			TimetoGemCalc calc = new TimetoGemCalc();
 			Resources.takeGems((Player)event.getWhoClicked(), calc.Calc(time3*60));
+=======
+			Resources re = new Resources();
+			TimetoGemCalc calc = new TimetoGemCalc();
+			re.takeGems((Player)event.getWhoClicked(), calc.Calc(time3*60));
+>>>>>>> origin/master
 			event.getWhoClicked().closeInventory();
 			break;
 		default: player.closeInventory();
@@ -288,10 +394,18 @@ public class BuildingPanels implements Listener{
 	}
 	@EventHandler
 	private void onBuildingInteract(BuildingInteractEvent event){
+<<<<<<< HEAD
 		if(event.getBuilding().getBuildingID() == 0){return;}
 		if(checkNotNull(event.getBuilding().getOwner()).equals(false)){return;}
 		openBuildingPanel(event.getBuilding());
 		currentBuildingID.put(event.getBuilding().getOwner().getName(), event.getBuilding().getBuildingID());
+=======
+		if(checkNotNull(event.getBuildingID()).equals(false)){return;}
+		if(checkNotNull(event.getBuildingName()).equals(false)){return;}
+		if(checkNotNull(event.getWhoClicked()).equals(false)){return;}
+		openBuildingPanel(event.getBuildingName(), event.getBuildingID(), event.getWhoClicked());
+		currentBuildingID.put(event.getWhoClicked().getName(), event.getBuildingID());
+>>>>>>> origin/master
 	} 
 	@EventHandler
 	private void onInventoryCloseEvent(InventoryCloseEvent event){

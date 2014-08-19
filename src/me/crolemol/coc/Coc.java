@@ -3,29 +3,35 @@ package me.crolemol.coc;
 import java.io.File;
 import java.io.IOException;
 
-import me.crolemol.coc.arena.ArenaApi;
+import me.crolemol.coc.arena.Buildingspecs;
+import me.crolemol.coc.arena.InteractStick;
+import me.crolemol.coc.arena.building.Goldmine;
+import me.crolemol.coc.arena.building.RelativeBuilding;
+import me.crolemol.coc.arena.panels.BuildingPanels;
+import me.crolemol.coc.arena.panels.BuildingShop;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Coc extends JavaPlugin {
 	protected static Coc plugin;
-	protected FileConfiguration mineConf;
-	protected File mineFile;
-	protected File generalFile;
+	private static FileConfiguration mineConf;
+	private static File mineFile;
+	private File generalFile;
 	protected FileConfiguration generalConf;
+	protected  File UUIDFile;
+	protected  FileConfiguration UUIDConf;
 
 	@Override
 	public void onEnable() {
 		plugin = this;
-		ArenaApi.UUIDFile = new File(plugin.getDataFolder() + "/data/", "ArenaUUIDS.yml");
-		ArenaApi.UUIDConf = YamlConfiguration.loadConfiguration(ArenaApi.UUIDFile);
+		UUIDFile = new File(this.getDataFolder() + "/data/ArenaUUIDS.yml");
+		UUIDConf = YamlConfiguration.loadConfiguration(UUIDFile);
 		if (!(this.getServer().getWorlds().contains(this.getServer().getWorld(
 				"coc")))) {
 			WorldCreator wc = new WorldCreator("coc");
@@ -35,28 +41,33 @@ public class Coc extends JavaPlugin {
 			wc.createWorld();
 			plugin.getServer().createWorld(wc);
 		}
-		this.saveResource("schematics/ground.schematic", false);
+		saveresources();
 		generalFile = new File(plugin.getDataFolder() + "/data", "general.yml");
-		generalConf = YamlConfiguration.loadConfiguration(generalFile);
+		generalConf = YamlConfiguration.loadConfiguration(getGeneralFile());
 		generalConf.addDefault("max x", 2000);
 		generalConf.addDefault("nextground.x", 0);
 		generalConf.addDefault("nextground.y", 64);
 		generalConf.addDefault("nextground.z", 0);
 		generalConf.options().copyDefaults(true);
 		try {
-			generalConf.save(generalFile);
+			generalConf.save(getGeneralFile());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		ArenaApi.getUUIDConf().set("UUIDCounter", 0);
-		ArenaApi.getUUIDConf().options().copyDefaults(true);
+		UUIDConf.addDefault("UUIDCounter", 0);
+		UUIDConf.options().copyDefaults(true);
 		try {
-			ArenaApi.UUIDConf.save(ArenaApi.UUIDFile);
+			UUIDConf.save(UUIDFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		this.getCommand("coc").setExecutor(new CocCommandExecutor());
 		this.getServer().getPluginManager().registerEvents(new Eventlistener(), this);
+		this.getServer().getPluginManager().registerEvents(new BuildingPanels(), this);
+		this.getServer().getPluginManager().registerEvents(new BuildingShop(), this);
+		this.getServer().getPluginManager().registerEvents(new RelativeBuilding(new Goldmine(null, null, 0, 0)), this);
+		this.getServer().getPluginManager().registerEvents(new InteractStick(), this);
+
 	}
 
 	@Override
@@ -69,35 +80,55 @@ public class Coc extends JavaPlugin {
 		return new Nullchunkgenerator();
 	}
 
-	public FileConfiguration getdataconffile(Player player) {
-		mineFile = new File(plugin.getDataFolder() + "/data/players/", player.getName()
-				+ ".yml");
-		mineConf = YamlConfiguration.loadConfiguration(mineFile);
-		return mineConf;
 
-	}
-	public FileConfiguration getdataconffile(OfflinePlayer player) {
-		mineFile = new File(plugin.getDataFolder() + "/data/players/", player.getName()
-				+ ".yml");
+	public static FileConfiguration getdataconffile(OfflinePlayer player) {
+		mineFile = new File(plugin.getDataFolder() + "/data/players/",
+				player.getName() + ".yml");
 		mineConf = YamlConfiguration.loadConfiguration(mineFile);
 		return mineConf;
 
 	}
 
-	public File getdatafile(Player player) {
-		mineFile = new File(plugin.getDataFolder() + "/data/players", player.getName()
-				+ ".yml");
+	public static File getdatafile(OfflinePlayer player) {
+		mineFile = new File(plugin.getDataFolder() + "/data/players",
+				player.getName() + ".yml");
 		return mineFile;
 
 	}
 
 	public FileConfiguration getgeneraldataconf() {
-		generalFile = new File(plugin.getDataFolder() + "/data",
-				"general.yml");
-		generalConf = YamlConfiguration.loadConfiguration(generalFile);
+		generalConf = YamlConfiguration.loadConfiguration(getGeneralFile());
 		return generalConf;
 	}
-	public static Coc getPlugin(){
+
+	public File getGeneralFile() {
+		return generalFile;
+	}
+
+	public static Coc getPlugin() {
 		return plugin;
+	}
+	public FileConfiguration getUUIDConf(){
+		return UUIDConf;
+	}
+	public File getUUIDFile(){
+		return UUIDFile;
+	}
+	private void saveresources() {
+		File ground = new File(this.getDataFolder()
+				+ "schematics/ground.schematic");
+		if (!ground.exists()) {
+			this.saveResource("schematics/ground.schematic", false);
+		}
+		for(Buildingspecs building : Buildingspecs.values()){
+			for(int level=1;level<=building.getMaxLevel();level++){
+				File buildingfile = new File(this.getDataFolder()	+ "schematics/"+building.getName()+"/"+building.getName()+"_lv"+level+".schematic");
+				if (!buildingfile.exists()) {
+					this.saveResource("schematics/"+building.getName()+"/"+building.getName()+"_lv"+level+".schematic",
+							false);
+				}
+			}
+		}
+		
 	}
 }

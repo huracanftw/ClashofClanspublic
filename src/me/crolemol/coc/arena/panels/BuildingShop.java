@@ -3,16 +3,16 @@ package me.crolemol.coc.arena.panels;
 import java.util.ArrayList;
 import java.util.List;
 
-<<<<<<< HEAD
+import me.crolemol.coc.Coc;
+import me.crolemol.coc.arena.Base;
+import me.crolemol.coc.arena.building.GoldStorage;
 import me.crolemol.coc.arena.building.Goldmine;
 import me.crolemol.coc.arena.building.RelativeBuilding;
-=======
-import me.crolemol.coc.arena.Building;
->>>>>>> origin/master
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -81,7 +81,14 @@ public class BuildingShop implements Listener{
 		ItemMeta GoldmineMeta = Goldmine.getItemMeta();
 		GoldmineMeta.setDisplayName(ChatColor.LIGHT_PURPLE+"Goldmine");
 		Goldmine.setItemMeta(GoldmineMeta);
+		
+		ItemStack GoldStorage = new ItemStack(Material.GOLD_BLOCK);
+		ItemMeta GoldStorageMeta = GoldStorage.getItemMeta();
+		GoldStorageMeta.setDisplayName(ChatColor.LIGHT_PURPLE+"GoldStorage");
+		GoldStorage.setItemMeta(GoldStorageMeta);
+		
 		inv.setItem(2, Goldmine);
+		inv.setItem(4, GoldStorage);
 		player.openInventory(inv);
 	}
 	@EventHandler
@@ -105,15 +112,23 @@ public class BuildingShop implements Listener{
 			}
 			switch(event.getCurrentItem().getType()){
 			case GOLD_NUGGET:
-<<<<<<< HEAD
+				Player player = (Player)event.getWhoClicked();
+				FileConfiguration dataconf = Coc.getPlugin().getdataconffile(player);
+				Base base = Base.getBase((Player)event.getWhoClicked());
+				TownhallLimit[] thl = TownhallLimit.values();
+				player.sendMessage(base+"");
+				if(base.getAmountofBuilding("goldmine")>thl[dataconf.getInt("townhall.1.level")-1].getMaxGoldmines()){
+					player.sendMessage(ChatColor.RED+"[ClashofClans] you have reached the max number of goldmine for this townhall level!");
+					return;
+				}
 				RelativeBuilding rb = new RelativeBuilding(new Goldmine((Player) event.getWhoClicked(), null, 1, 0));
 				rb.putRelativeBuilding((Player)event.getWhoClicked());
-=======
-				Building rb = new Building();
-				rb.placeRelativeBuilding("goldmine", 1, (Player)event.getWhoClicked());
->>>>>>> origin/master
 				event.getWhoClicked().closeInventory();
 				break;
+			case GOLD_BLOCK:
+				RelativeBuilding rb2 = new RelativeBuilding(new GoldStorage((Player) event.getWhoClicked(), null, 1, 0));
+				rb2.putRelativeBuilding((Player)event.getWhoClicked());
+				event.getWhoClicked().closeInventory();
 			default: event.getWhoClicked().closeInventory();
 				
 			}

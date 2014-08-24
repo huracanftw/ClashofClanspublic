@@ -3,8 +3,10 @@ package me.crolemol.coc.arena;
 public enum Buildingspecs {
 	// length is z axis
 	// width is x axis
-	townhall("townhall", 12, 10,6),
-	goldmine("goldmine", 8, 8,11);
+	townhall("townhall", 12, 10,8),
+	goldmine("goldmine", 8, 8,11),
+	goldstorage("goldstorage",8,8,11),
+	elixircollector("elixircollector",0,0,0);
 	private int returnlength;
 	private int returnwidth;
 	private String returnname;

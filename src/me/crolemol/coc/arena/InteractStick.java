@@ -4,19 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.crolemol.coc.Coc;
-<<<<<<< HEAD
 import me.crolemol.coc.arena.events.BuildingInteractEvent;
-=======
-import me.crolemol.coc.arena.Base.Buildingspecs;
-import me.crolemol.coc.events.BuildingInteractEvent;
->>>>>>> origin/master
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-<<<<<<< HEAD
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -25,12 +19,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public class InteractStick implements Listener{
-=======
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-public class InteractStick {
->>>>>>> origin/master
 	Coc plugin = Coc.getPlugin();
 	public static void getInteractStick(Player player){
 		ItemStack InteractStick = new ItemStack(Material.STICK);
@@ -43,27 +31,17 @@ public class InteractStick {
 		InteractStick.setItemMeta(InteractStickMeta);
 		player.getInventory().setItem(0, InteractStick);
 	}
-<<<<<<< HEAD
 	private void Interacted(Location targetblock,Player player){
 		Base arena = Base.getBase(player);
 		List<String> contains = arena.containsbuildings();
-=======
-	public void Interacted(Location targetblock,Player player){
-		Base arena = new Base();
-		List<String> contains = arena.containsbuildings(player);
->>>>>>> origin/master
-		FileConfiguration dataconf = Coc.getdataconffile(player);
+		FileConfiguration dataconf = plugin.getdataconffile(player);
 		for(Buildingspecs building : Buildingspecs.values()){
 			if(contains.contains(building.getName())){
-				for(int counter=1;counter<=arena.getAmountofBuilding(building.getName(),player);counter++){
+				for(int counter=1;counter<=arena.getAmountofBuilding(building.getName());counter++){
 				Location loc1 = new Location(plugin.getServer().getWorld("coc"), dataconf.getInt(building.getName()+"."+counter+".location.x"), dataconf.getInt(building.getName()+"."+counter+".location.y"), dataconf.getInt(building.getName()+"."+counter+".location.z"));
 				Location loc2 = new Location(plugin.getServer().getWorld("coc"), loc1.getBlockX()+building.getWidth(), loc1.getBlockY(), loc1.getBlockZ()+building.getLength());
 				if(checkIfInArea(loc1,loc2,targetblock) == true){
-<<<<<<< HEAD
 					BuildingInteractEvent event = new BuildingInteractEvent(arena.getBuilding(building.getName(), counter, player));
-=======
-					BuildingInteractEvent event = new BuildingInteractEvent(building.getName(), counter, player);
->>>>>>> origin/master
 					Bukkit.getServer().getPluginManager().callEvent(event);
 					return;
 				}
@@ -71,7 +49,6 @@ public class InteractStick {
 			}
 		}
 	}
-<<<<<<< HEAD
 	@EventHandler
 	public void onInteract(PlayerInteractEvent event){
 		Action action = event.getAction();
@@ -95,8 +72,6 @@ public class InteractStick {
 		return;
 		}
 	}
-=======
->>>>>>> origin/master
 	
 	
 	private boolean checkIfInArea(Location corner1, Location corner2, Location Pos){

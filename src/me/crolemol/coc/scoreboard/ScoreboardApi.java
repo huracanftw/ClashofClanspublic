@@ -17,7 +17,7 @@ public class ScoreboardApi {
 	
 	@SuppressWarnings("deprecation")
 	public void setCurrencyBoard(Player player){
-		FileConfiguration dataconf = Coc.getdataconffile(player);
+		FileConfiguration dataconf = Coc.getPlugin().getdataconffile(player);
 		Scoreboard board = manager.getNewScoreboard();
 		Objective objective = board.registerNewObjective("test", "dummy");
 		objective.setDisplaySlot(DisplaySlot.SIDEBAR);

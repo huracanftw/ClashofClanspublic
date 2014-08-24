@@ -3,7 +3,7 @@ package me.crolemol.coc.arena.building.interfaces;
 import me.crolemol.coc.Coc;
 
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
 
 
 public interface Building{
@@ -14,6 +14,10 @@ public interface Building{
 	public int getBuildingID();
 	public int getLevel();
 	public Location getLocation();
-	public Player getOwner();
+	public OfflinePlayer getOwner();
 	public String getBuildingName();
+	public BuildingSpecs[] getBuildingSpecs();
+	public void setLevel(int level);
+	public void setBuildingID(int BuildingID);
+	public void setLocation(Location location);
 }

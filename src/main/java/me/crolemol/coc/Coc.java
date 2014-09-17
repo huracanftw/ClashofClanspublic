@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import me.crolemol.SQLibrary.H2;
 import me.crolemol.SQLibrary.SQLite;
 import me.crolemol.coc.arena.Buildingspecs;
 import me.crolemol.coc.arena.InteractStick;
@@ -45,7 +44,6 @@ public class Coc extends JavaPlugin {
 		plugin = this;
 		UUIDFile = new File(this.getDataFolder() + "/data/ArenaUUIDS.yml");
 		UUIDConf = YamlConfiguration.loadConfiguration(UUIDFile);
-		this.saveResource("lib/h2-latest.jar", false);
 		sqlConnection();
 		if (!(this.getServer().getWorlds().contains(this.getServer().getWorld(
 				"coc")))) {

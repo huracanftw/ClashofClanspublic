@@ -105,7 +105,6 @@ public class NPCFactory implements Listener {
 	public boolean isNPC(Entity entity) {
 		return entity.hasMetadata("NPC");
 	}
-	
 	/**
 	 * Despawn all npc's on all worlds.
 	 */
@@ -126,6 +125,9 @@ public class NPCFactory implements Listener {
 				entity.remove();
 			}
 		}
+	}
+	public NPCNetworkManager getNetworkManager(){
+		return networkManager;
 	}
 	
 	@EventHandler

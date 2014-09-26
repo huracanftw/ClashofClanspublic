@@ -6,20 +6,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Level;
 
 import me.crolemol.SQLibrary.SQLite;
-import me.crolemol.coc.arena.Buildingspecs;
+import me.crolemol.coc.arena.BuildingType;
 import me.crolemol.coc.arena.InteractStick;
-import me.crolemol.coc.arena.building.Goldmine;
 import me.crolemol.coc.arena.building.RelativeBuilding;
 import me.crolemol.coc.arena.panels.BuildingShop;
 import me.crolemol.coc.arena.panels.buildingpanels.PanelClick;
 
-import org.bukkit.OfflinePlayer;
 import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -29,21 +24,18 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class Coc extends JavaPlugin {
 	protected static Coc plugin;
-	private static FileConfiguration mineConf;
-	private static File mineFile;
 	private File generalFile;
 	protected FileConfiguration generalConf;
 	protected File UUIDFile;
 	protected FileConfiguration UUIDConf;
-	private static Map<UUID, FileConfiguration> dataconf = new HashMap<>();
-	private SQLite db;
+	private static SQLite db;
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void onEnable() {
 		plugin = this;
 		UUIDFile = new File(this.getDataFolder() + "/data/ArenaUUIDS.yml");
 		UUIDConf = YamlConfiguration.loadConfiguration(UUIDFile);
+		this.saveResource("lib/h2-latest.jar", false);
 		sqlConnection();
 		if (!(this.getServer().getWorlds().contains(this.getServer().getWorld(
 				"coc")))) {
@@ -79,11 +71,8 @@ public class Coc extends JavaPlugin {
 				.registerEvents(new Eventlistener(), this);
 		this.getServer().getPluginManager()
 				.registerEvents(new BuildingShop(), this);
-		this.getServer()
-				.getPluginManager()
-				.registerEvents(
-						new RelativeBuilding(new Goldmine(this.getServer()
-								.getOfflinePlayer("crolemol"), 0)), this);
+		this.getServer().getPluginManager()
+				.registerEvents(new RelativeBuilding(null), this);
 		this.getServer().getPluginManager()
 				.registerEvents(new InteractStick(), this);
 		this.getServer().getPluginManager()
@@ -103,29 +92,6 @@ public class Coc extends JavaPlugin {
 	@Override
 	public ChunkGenerator getDefaultWorldGenerator(String worldName, String id) {
 		return new Nullchunkgenerator();
-	}
-
-	public FileConfiguration getdataconffile(OfflinePlayer player) {
-		if (player == null) {
-			return null;
-		}
-		if (dataconf.containsKey(player.getUniqueId())) {
-			return dataconf.get(player.getUniqueId());
-		} else {
-			mineFile = new File(plugin.getDataFolder() + "/data/players/",
-					player.getName() + ".yml");
-			mineConf = YamlConfiguration.loadConfiguration(mineFile);
-			dataconf.put(player.getUniqueId(), mineConf);
-			return dataconf.get(player.getUniqueId());
-		}
-
-	}
-
-	public File getdatafile(OfflinePlayer player) {
-		mineFile = new File(plugin.getDataFolder() + "/data/players",
-				player.getName() + ".yml");
-		return mineFile;
-
 	}
 
 	public FileConfiguration getgeneraldataconf() {
@@ -148,22 +114,13 @@ public class Coc extends JavaPlugin {
 		return UUIDFile;
 	}
 
-	public void saveDataconf(OfflinePlayer player) {
-		try {
-			getdataconffile(player).save(getdatafile(player));
-			dataconf.remove(player.getUniqueId());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 	private void saveresources() {
 		File ground = new File(this.getDataFolder()
 				+ "schematics/ground.schematic");
 		if (!ground.exists()) {
 			this.saveResource("schematics/ground.schematic", false);
 		}
-		for (Buildingspecs building : Buildingspecs.values()) {
+		for (BuildingType building : BuildingType.values()) {
 			for (int level = 1; level <= building.getMaxLevel(); level++) {
 				File buildingfile = new File(this.getDataFolder()
 						+ "schematics/" + building.getName() + "/"
@@ -182,16 +139,18 @@ public class Coc extends JavaPlugin {
 	private void sqlConnection() {
 		File dbfilepath = new File(plugin.getDataFolder() + "/data/db/");
 		dbfilepath.mkdirs();
-		File dbfile = new File(dbfilepath +"data.db");
+		File dbfile = new File(dbfilepath + "data.db");
 		try {
 			dbfile.createNewFile();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
 		db = new SQLite(plugin.getLogger(), this.getDescription().getName(),
-				"plugins/"+ this.getDescription().getName()+"/data/db/", "data");
+				"plugins/" + this.getDescription().getName() + "/data/db/",
+				"data");
 		try {
 			db.open();
+			db.getConnection().setAutoCommit(false);
 		} catch (Exception e) {
 			plugin.getLogger().info(e.getMessage());
 			getPluginLoader().disablePlugin(plugin);
@@ -199,9 +158,16 @@ public class Coc extends JavaPlugin {
 	}
 
 	private void preparedatabase() throws SQLException {
-		db.query("CREATE TABLE IF NOT EXISTS `Bases`('UUID' int(20) NOT NULL,"
-				+ "'owner' varchar(30) NOT NULL,'spawnlocation_x' int(12) NOT NULL,"
-				+ "'spawnlocation_y' int(12) NOT NULL,'spawnlocation_z' int(12) NOT NULL)");
+		db.query("CREATE TABLE IF NOT EXISTS `Bases`('BaseID' INTEGER,"
+				+ "'owner' TEXT NOT NULL,'spawnlocation_x' int NOT NULL,"
+				+ "'spawnlocation_y' int NOT NULL,'spawnlocation_z' int NOT NULL,PRIMARY KEY (BaseID))").close();;
+		db.query("CREATE TABLE IF NOT EXISTS `Resources`("
+				+ "'owner' TEXT NOT NULL,'Gold' int NOT NULL,"
+				+ "'Elixir' int NOT NULL,'DarkElixir' int NOT NULL,'Gems' int NOT NULL)").close();
+		db.query("CREATE TABLE IF NOT EXISTS `Buildings`("
+				+ "'owner' TEXT NOT NULL,'BuildingName' varchar(20) NOT NULL,'Location_x' int NOT NULL,"
+				+ "'Location_y' int NOT NULL,'Location_z' int NOT NULL,'Level' int(2),'BuildingID' int(2),'Upgrade' int ,'LastCollect' int)").close();;
+	db.getConnection().commit();
 	}
 
 	public SQLite getDataBase() {

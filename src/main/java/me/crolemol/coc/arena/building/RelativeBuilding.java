@@ -35,16 +35,17 @@ public class RelativeBuilding implements Listener {
 		this.building = building;
 	}
 
-	public void placeRelativeBuilding(Player player){
+	public void placeRelativeBuilding(Player player) {
 		removeRelativeBuilding(player);
 		Base base = Base.getBase(player);
-		if(building.isRealBuilding() == false){
+		if (building.isRealBuilding() == false) {
 			@SuppressWarnings("deprecation")
 			Location loc = player.getTargetBlock(null, 10).getLocation();
-			base.placeNonRealBuilding(building,loc , player);
+			base.placeNonRealBuilding(building, loc, player);
 		}
 
-		base.Rebuild();}
+		base.Rebuild();
+	}
 
 	@SuppressWarnings("deprecation")
 	public void putRelativeBuilding(Player player) {
@@ -53,8 +54,8 @@ public class RelativeBuilding implements Listener {
 		try {
 			cc = CuboidClipboard.loadSchematic(new File(plugin.getDataFolder()
 					+ "/schematics/" + building.getBuildingName() + "/"
-					+ building.getBuildingName() + "_lv"
-					+ building.getLevel() + ".schematic"));
+					+ building.getBuildingName() + "_lv" + building.getLevel()
+					+ ".schematic"));
 		} catch (DataException | IOException e) {
 			e.printStackTrace();
 		}
@@ -63,8 +64,10 @@ public class RelativeBuilding implements Listener {
 				for (int ycounter = 0; ycounter < cc.getHeight(); ycounter++) {
 					Location loc = new Location(plugin.getServer().getWorld(
 							"coc"), player.getTargetBlock(null, 10)
-							.getLocation().getBlockX()+ xcounter,
-							player.getTargetBlock(null, 10).getLocation().getBlockY()+ ycounter + cc.getOffset().getBlockY(), player
+							.getLocation().getBlockX()
+							+ xcounter, player.getTargetBlock(null, 10)
+							.getLocation().getBlockY()
+							+ ycounter + cc.getOffset().getBlockY(), player
 							.getTargetBlock(null, 10).getLocation().getBlockZ()
 							+ zcounter);
 					Vector vec = new Vector(xcounter, ycounter, zcounter);
@@ -94,8 +97,8 @@ public class RelativeBuilding implements Listener {
 		try {
 			cc = CuboidClipboard.loadSchematic(new File(plugin.getDataFolder()
 					+ "/schematics/" + building.getBuildingName() + "/"
-					+ building.getBuildingName() + "_lv"
-					+ building.getLevel() + ".schematic"));
+					+ building.getBuildingName() + "_lv" + building.getLevel()
+					+ ".schematic"));
 		} catch (DataException | IOException e) {
 			e.printStackTrace();
 		}
@@ -130,8 +133,12 @@ public class RelativeBuilding implements Listener {
 				player.getTargetBlock(null, 10))) {
 			CuboidClipboard cc = null;
 			try {
-				cc = CuboidClipboard.loadSchematic(new File(plugin.getDataFolder()
-		+ "/schematics/"+ building.getBuildingName()+ "/"+ building.getBuildingName()
+				cc = CuboidClipboard.loadSchematic(new File(plugin
+						.getDataFolder()
+						+ "/schematics/"
+						+ building.getBuildingName()
+						+ "/"
+						+ building.getBuildingName()
 						+ "_lv"
 						+ building.getLevel() + ".schematic"));
 			} catch (DataException | IOException e) {
@@ -144,9 +151,8 @@ public class RelativeBuilding implements Listener {
 								.getWorld("coc"), target.get(player.getName())
 								.getBlockX() + xcounter, target.get(
 								player.getName()).getBlockY()
-								+ ycounter + cc.getOffset().getBlockY(),
-								target.get(player.getName()).getBlockZ()
-										+ zcounter);
+								+ ycounter + cc.getOffset().getBlockY(), target
+								.get(player.getName()).getBlockZ() + zcounter);
 						Block block = loc.getBlock();
 						block.setData(block.getData());
 						Material material = block.getType();
@@ -158,12 +164,16 @@ public class RelativeBuilding implements Listener {
 					for (int zcounter2 = 0; zcounter2 < cc.getLength(); zcounter2++) {
 						for (int ycounter2 = 0; ycounter2 < cc.getHeight(); ycounter2++) {
 							Location loc2 = new Location(plugin.getServer()
-									.getWorld("coc"), player.getTargetBlock(null, 10).getLocation()
-									.getBlockX()+ xcounter2, player.getTargetBlock(null, 10).getLocation()
-									.getBlockY()+ ycounter2+ cc.getOffset().getBlockY()
-									, player.getTargetBlock(null, 10)
-									.getLocation().getBlockZ()
-									+ zcounter2);
+									.getWorld("coc"), player
+									.getTargetBlock(null, 10).getLocation()
+									.getBlockX()
+									+ xcounter2, player
+									.getTargetBlock(null, 10).getLocation()
+									.getBlockY()
+									+ ycounter2 + cc.getOffset().getBlockY(),
+									player.getTargetBlock(null, 10)
+											.getLocation().getBlockZ()
+											+ zcounter2);
 							Vector vec = new Vector(xcounter2, ycounter2,
 									zcounter2);
 							BaseBlock block = cc.getBlock(vec);
@@ -202,8 +212,10 @@ public class RelativeBuilding implements Listener {
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	private void onPlayerInteract(PlayerInteractEvent event) {
+		if(event.getPlayer().getWorld().getName() != "coc"){return;}
 		Base base = Base.getBase(event.getPlayer());
-		if (!event.getPlayer().getWorld().equals(plugin.getServer().getWorld("coc"))) {
+		if (!event.getPlayer().getWorld()
+				.equals(plugin.getServer().getWorld("coc"))) {
 			return;
 		}
 		if (!target.containsKey(event.getPlayer().getName())) {
@@ -212,7 +224,8 @@ public class RelativeBuilding implements Listener {
 		if (!staticbuilding.containsKey(event.getPlayer().getName())) {
 			return;
 		}
-		RelativeBuilding rb = new RelativeBuilding(getNewBuilding(event.getPlayer()));
+		RelativeBuilding rb = new RelativeBuilding(
+				getNewBuilding(event.getPlayer()));
 		CuboidClipboard cc = null;
 		try {
 			cc = CuboidClipboard.loadSchematic(new File(plugin.getDataFolder()
@@ -232,9 +245,11 @@ public class RelativeBuilding implements Listener {
 		if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)
 				|| event.getAction().equals(Action.RIGHT_CLICK_AIR)) {
 			if (event.getPlayer().getTargetBlock(null, 10).getLocation()
-					.getBlockY() == plugin.getdataconffile(event.getPlayer())
-					.getInt("spawn.y") - 1) {
-				Location loc1 = new Location(plugin.getServer().getWorld("coc"), base.getArenaSpawn().getBlockX()+ cc.getWidth()
+					.getBlockY() == base.getArenaSpawn().getBlockY() - 1) {
+				Location loc1 = new Location(
+						plugin.getServer().getWorld("coc"), base
+								.getArenaSpawn().getBlockX()
+								+ cc.getWidth()
 								/ 2 - 10, base.getArenaSpawn().getBlockY(),
 						base.getArenaSpawn().getBlockZ() + cc.getLength() / 2
 								- 10);
@@ -282,16 +297,22 @@ public class RelativeBuilding implements Listener {
 													+ "[ClashofClans] your building is not in your base!");
 						}
 					} else {
-						event.getPlayer().sendMessage(ChatColor.RED
+						event.getPlayer()
+								.sendMessage(
+										ChatColor.RED
 												+ "[ClashofClans] your building is not in your base!");
 					}
 				} else {
-					event.getPlayer().sendMessage(
-									ChatColor.RED+ "[ClashofClans] your building is not in your base!");
+					event.getPlayer()
+							.sendMessage(
+									ChatColor.RED
+											+ "[ClashofClans] your building is not in your base!");
 				}
 			} else {
-				event.getPlayer().sendMessage(
-								ChatColor.RED+ "[ClashofClans] your building is not on the ground!");
+				event.getPlayer()
+						.sendMessage(
+								ChatColor.RED
+										+ "[ClashofClans] your building is not on the ground!");
 			}
 		}
 		if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)
@@ -313,26 +334,6 @@ public class RelativeBuilding implements Listener {
 	}
 
 	private Building getNewBuilding(Player player) {
-		Building building = staticbuilding.get(player.getName());
-		if (building instanceof Goldmine) {
-			return new Goldmine(building.getOwner(),building.getLevel());
-		} else if (building instanceof Townhall) {
-			return new Townhall(building.getOwner(),building.getLevel());
-		} else if (building instanceof GoldStorage) {
-			return new GoldStorage(building.getOwner(),building.getLevel());
-		}else if (building instanceof BuildersHut){
-			return new BuildersHut(player,building.getLevel());
-		}else if(building instanceof ElixirCollector){
-			return new ElixirCollector(player,building.getLevel());
-		}else if(building instanceof ElixirStorage){
-			return new ElixirStorage(player,building.getLevel());
-		}else if(building instanceof DarkElixirStorage){
-			return new DarkElixirStorage(player,building.getLevel());
-		}else if(building instanceof DarkElixirDrill){
-			return new DarkElixirDrill(player,building.getLevel());
-		}else if(building instanceof ArmyCamp){
-			return new ArmyCamp(player,building.getLevel());
-		}
-		return null;
+		return staticbuilding.get(player.getName());
 	}
 }

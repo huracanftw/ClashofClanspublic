@@ -1,5 +1,7 @@
 package me.crolemol.coc.arena.building;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Calendar;
 
 import me.crolemol.coc.Coc;
@@ -13,19 +15,14 @@ import me.crolemol.coc.economy.Gold;
 import me.crolemol.coc.economy.Resources;
 
 import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class UpgradeBuilding{
-	Coc plugin  = Coc.getPlugin();
+public class UpgradeBuilding {
+	Coc plugin = Coc.getPlugin();
+
 	public void startNewUpgrade(final Building building){
-		((Player) building.getOwner()).sendMessage("check 1");
-		final String BuildingName = building.getBuildingName();
 		final BuildingSpecs[] spec = building.getBuildingSpecs();
 		final int BuildingID = building.getBuildingID();
-		OfflinePlayer BuildingOwner = building.getOwner();
-		final FileConfiguration dataconf = plugin.getdataconffile(BuildingOwner);
 		
 		if(spec[building.getLevel()].getUpgradePrice() instanceof Gold){
 		if(	Resources.getGold(building.getOwner()) < spec[building.getLevel()].getUpgradePrice().getAmount()){
@@ -41,17 +38,34 @@ public class UpgradeBuilding{
 			}
 		}
 		Calendar cal = Calendar.getInstance();
-		dataconf.set(BuildingName+"."+BuildingID+".upgrade", cal.getTimeInMillis()/60/1000);
+		plugin.getDataBase().query("UPDATE Buildings SET Upgrade="+(cal.getTimeInMillis()/60/1000)+" WHERE owner = '"
+						+ building.getOwner().getUniqueId()
+						+ "' AND BuildingID = "+ BuildingID
+						+ " AND BuildingName = '"+building.getBuildingName()+"'");
 		Resources.Take(spec[building.getLevel()].getUpgradePrice(), building.getOwner());
+		try {
+			plugin.getDataBase().getConnection().commit();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 		new BukkitRunnable(){
 
 			@Override
 			public void run() {	
 				Calendar cal = Calendar.getInstance();
 				Long caltime = cal.getTimeInMillis()/60/1000;
-				Long cal2 = dataconf.getLong(BuildingName+"."+BuildingID+".upgrade");
+				ResultSet result = plugin.getDataBase().query("SELECT Upgrade FROM Buildings WHERE owner = '"
+						+ building.getOwner().getUniqueId()
+						+ "' AND BuildingID = "+ BuildingID
+						+ " AND BuildingName = '"+building.getBuildingName()+"'");
+				Long cal2 = (long) 0;
+				try {
+					cal2 = result.getLong("Upgrade");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 				Long time1 = timeBetweenDates(cal2, caltime);
-				int time2 = spec[dataconf.getInt(BuildingName+"."+BuildingID+".level")].getUpgradeTime();
+				int time2 = spec[building.getLevel()].getUpgradeTime();
 				Long time3 = time2 - time1;
 				if(time3 <=0){
 					FinishUpgrade(building);
@@ -61,26 +75,32 @@ public class UpgradeBuilding{
 			}
 			}.runTaskTimer(plugin, 0, 1200L);
 	}
-	public void FinishUpgrade(Building building){
-		if(building.isUpgrading() == false){return;}
+
+	public void FinishUpgrade(Building building) {
+		if (building.isUpgrading() == false) {
+			return;
+		}
 		OfflinePlayer BuildingOwner = building.getOwner();
-		String BuildingName = building.getBuildingName();
-		int buildingID = building.getBuildingID();
-		FileConfiguration dataconf = plugin.getdataconffile(BuildingOwner);
-		dataconf.set(BuildingName+"."+buildingID+".upgrade", null);
-		building.setLevel(building.getLevel()+1);
-		if (building instanceof ResourceBuilding){
+		plugin.getDataBase().query("UPDATE Buildings SET Upgrade = NULL WHERE owner = '"
+				+ building.getOwner().getUniqueId()
+				+ "' AND BuildingID = "+ building.getBuildingID()
+				+ " AND BuildingName = '"+building.getBuildingName()+"'");
+		building.setLevel(building.getLevel() + 1);
+		if (building instanceof ResourceBuilding) {
 			((ResourceBuilding) building).setCollectable(0);
 		}
-		((Player) building.getOwner()).sendMessage(building.getBuildingID()+"");
-		plugin.saveDataconf(building.getOwner());
 		Base base = Base.getBase(BuildingOwner);
 		base.Rebuild();
+		try {
+			plugin.getDataBase().getConnection().commit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
-	private Long timeBetweenDates(Long earliestDate,Long latestDate){
+
+	private Long timeBetweenDates(Long earliestDate, Long latestDate) {
 		Long difference = latestDate - earliestDate;
 		return difference;
 	}
-
 
 }

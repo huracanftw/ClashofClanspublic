@@ -1,10 +1,11 @@
 package me.crolemol.coc.arena.building;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
-import org.bukkit.configuration.file.FileConfiguration;
-
 import me.crolemol.coc.Coc;
 import me.crolemol.coc.arena.building.interfaces.BuildingPanel;
 import me.crolemol.coc.arena.building.interfaces.Storage;
@@ -13,25 +14,14 @@ import me.crolemol.coc.arena.panels.buildingpanels.ElixirStoragePanel;
 import me.crolemol.coc.economy.Gold;
 import me.crolemol.coc.economy.Resource;
 
-public class ElixirStorage implements Storage{
+public class ElixirStorage extends Storage{
 	static Coc plugin = Coc.getPlugin();
-	private int BuildingID2;
-	private int level2;
-	private Location loc2;
-	private OfflinePlayer owner2;
-	private boolean isRealBuilding;
-	public ElixirStorage(OfflinePlayer owner,int level){
-		level2 = level;
-		owner2 = owner;
-		isRealBuilding=false;
+	public ElixirStorage(int level){
+		super(level);
 	}
 	
 	private ElixirStorage(OfflinePlayer owner,Location loc,int level,int BuildingID, boolean isreal){
-		BuildingID2 = BuildingID;
-		level2 = level;
-		loc2 = loc;
-		owner2 = owner;
-		isRealBuilding = isreal;
+		super(owner,loc,level,BuildingID,isreal);
 	}
 
 		
@@ -39,34 +29,35 @@ public class ElixirStorage implements Storage{
 
 	public static ElixirStorage getElixirStorage(int BuildingID,
 			OfflinePlayer owner) {
-		FileConfiguration dataconf = plugin.getdataconffile(owner);
+		if(BuildingID == 0){
+			throw new IllegalArgumentException("BuildingID cannot be 0");
+		}
+		if(owner == null){
+			throw new IllegalArgumentException("owner cannot be null");
+		}
 		World world = plugin.getServer().getWorld("coc");
-		int x = dataconf.getInt("elixirstorage."+BuildingID+".location.x");
-		int y = dataconf.getInt("elixirstorage."+BuildingID+".location.y");
-		int z = dataconf.getInt("elixirstorage."+BuildingID+".location.z");
-		
-		return new ElixirStorage(owner,new Location(world,x,y,z),dataconf.getInt("elixirstorage."+BuildingID+".level"),BuildingID,true);
-	}
-
-	@Override
-	public int getBuildingID() {
-		return BuildingID2;
-	}
-
-	@Override
-	public int getLevel() {
-		return level2;
-	}
-
-	@Override
-	public Location getLocation() {
-		return loc2;
-	}
-
-	@Override
-	public OfflinePlayer getOwner() {
-		return owner2;
-	}
+		ResultSet result = plugin
+				.getDataBase()
+				.query("SELECT * FROM Buildings WHERE owner = '"
+						+ owner.getUniqueId()
+						+ "' AND BuildingID = "+ BuildingID
+						+ " AND BuildingName = 'elixirstorage'");
+		int x = 0;
+		int y = 0;
+		int z = 0;
+		int level = 0;
+		try {
+			x = result.getInt("Location_x");
+			y = result.getInt("Location_y");
+			z = result.getInt("Location_z");
+			level = result.getInt("Level");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		if(y == 0){
+			return null;
+		}
+		return new ElixirStorage(owner,new Location(world,x,y,z),level,BuildingID,true);}
 
 	@Override
 	public int getCapacity() {
@@ -143,57 +134,9 @@ public class ElixirStorage implements Storage{
 
 
 	@Override
-	public void setLevel(int level) {
-		level2 = level;
-		if(isRealBuilding()== true){
-			FileConfiguration dataconf = plugin.getdataconffile(owner2);
-			dataconf.set(getBuildingName()+"."+BuildingID2+".level", level2);
-			plugin.saveDataconf(owner2);
-		}
-		
-	}
-
-
-
-
-
-
-	@Override
-	public void setLocation(Location location) {
-		loc2 = location;
-		if(isRealBuilding() == true){
-			FileConfiguration dataconf = plugin.getdataconffile(owner2);
-			dataconf.set(getBuildingName()+"."+BuildingID2+".location.x", loc2.getBlockX());
-			dataconf.set(getBuildingName()+"."+BuildingID2+".location.y", loc2.getBlockY());
-			dataconf.set(getBuildingName()+"."+BuildingID2+".location.z", loc2.getBlockZ());
-			plugin.saveDataconf(owner2);
-		}
-		
-	}
-
-
-
-
-
-
-	@Override
 	public BuildingPanel getBuildingPanel() {
 		ElixirStoragePanel esp = new ElixirStoragePanel(this);
 		return esp;
-	}
-	@Override
-	public boolean isUpgrading() {
-		if(Coc.getPlugin().getdataconffile(owner2).contains(getBuildingName()+"."+getBuildingID()+".upgrade")){
-		return true;	
-		}else{
-			return false;
-		}
-
-	}
-
-	@Override
-	public boolean isRealBuilding() {
-		return isRealBuilding;
 	}
 
 }

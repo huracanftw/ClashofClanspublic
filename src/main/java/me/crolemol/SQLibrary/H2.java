@@ -1,22 +1,10 @@
 package me.crolemol.SQLibrary;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import me.crolemol.coc.Coc;
-
-import org.bukkit.Bukkit;
 
 /**
  * Child class for the H2 database.<br>
@@ -83,17 +71,12 @@ public class H2 extends FilenameDatabase {
 	@Override
 	protected boolean initialize() {
 		try {
-			File file = new File(Coc.getPlugin().getDataFolder()+"/lib/h2-latest.jar");
-			final URLClassLoader child = new URLClassLoader(new URL[]{file.toURI().toURL()}, this.getClass().getClassLoader());
-			Class<?> clazz = Class.forName("org.h2.Driver", true, child);
-			Method method = clazz.getDeclaredMethod ("load");
-			method.setAccessible(true);
-			method.invoke(clazz.newInstance());
+			Class.forName("org.h2.Driver");
 			return true;
-		} catch (IOException | ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | InstantiationException e) {
-			e.printStackTrace();
-			return false;
-		}
+	    } catch (ClassNotFoundException e) {
+	    	error("H2 driver class missing: " + e.getMessage() + ".");
+	    	return false;
+	    }
 	}
 
 	@Override

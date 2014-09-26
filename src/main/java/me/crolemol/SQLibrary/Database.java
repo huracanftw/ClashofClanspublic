@@ -236,16 +236,20 @@ public abstract class Database {
 	 * @param query the SQL query to send to the database.
 	 * @return the table of results from the query.
 	 */
-	public final ResultSet query(String query) throws SQLException {
-		queryValidation(this.getStatement(query));
-		Statement statement = this.getConnection().createStatement();
-	    if (statement.execute(query)) {
-	    	return statement.getResultSet();
-	    } else {
-	    	int uc = statement.getUpdateCount();
-	    	this.lastUpdate = uc;
-	    	return this.getConnection().createStatement().executeQuery("SELECT " + uc);
-	    }
+	public final ResultSet query(String query) {
+		try {
+			queryValidation(this.getStatement(query));
+			Statement statement = this.getConnection().createStatement();
+		    if (statement.execute(query)) {
+		    	return statement.getResultSet();
+		    } else {
+		    	int uc = statement.getUpdateCount();
+		    	this.lastUpdate = uc;
+		    	return this.getConnection().createStatement().executeQuery("SELECT " + uc);}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	/**

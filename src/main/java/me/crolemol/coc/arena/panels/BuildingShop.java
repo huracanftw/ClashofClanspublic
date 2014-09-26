@@ -3,9 +3,11 @@ package me.crolemol.coc.arena.panels;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.crolemol.coc.Coc;
 import me.crolemol.coc.arena.Base;
+import me.crolemol.coc.arena.building.ArcherQueenAltar;
 import me.crolemol.coc.arena.building.ArmyCamp;
+import me.crolemol.coc.arena.building.BarbarianKingAltar;
+import me.crolemol.coc.arena.building.Barracks;
 import me.crolemol.coc.arena.building.BuildersHut;
 import me.crolemol.coc.arena.building.DarkElixirDrill;
 import me.crolemol.coc.arena.building.DarkElixirStorage;
@@ -14,6 +16,8 @@ import me.crolemol.coc.arena.building.ElixirStorage;
 import me.crolemol.coc.arena.building.GoldStorage;
 import me.crolemol.coc.arena.building.Goldmine;
 import me.crolemol.coc.arena.building.RelativeBuilding;
+import me.crolemol.coc.arena.building.SpellFactory;
+import me.crolemol.coc.arena.building.Townhall;
 import me.crolemol.coc.arena.building.interfaces.BuildingSpecs;
 import me.crolemol.coc.arena.building.interfaces.ResourceBuildingSpecs;
 import me.crolemol.coc.arena.building.interfaces.StorageBuildingSpecs;
@@ -21,10 +25,9 @@ import me.crolemol.coc.economy.Resources;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.entity.Player;
@@ -34,6 +37,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 public class BuildingShop implements Listener{
 	public void OpenMainShopGUI(Player player){
@@ -151,8 +155,33 @@ public class BuildingShop implements Listener{
 		BarracksMeta.setDisplayName(ChatColor.LIGHT_PURPLE+"Barracks");
 		Barracks.setItemMeta(BarracksMeta);
 		
+		ItemStack BarbarianKingAltar = new ItemStack(Material.GOLD_HELMET);
+		ItemMeta BarbarianKingAltarMeta = BarbarianKingAltar.getItemMeta();
+		BarbarianKingAltarMeta.setDisplayName(ChatColor.LIGHT_PURPLE+"Barbarian King");
+		BarbarianKingAltar.setItemMeta(BarbarianKingAltarMeta);
+		
+		ItemStack ArcherQueenAltar = new ItemStack(Material.LEATHER_HELMET);
+		LeatherArmorMeta helmmeta = (LeatherArmorMeta) ArcherQueenAltar.getItemMeta();
+		helmmeta.setColor(Color.BLACK);
+		helmmeta.setDisplayName(ChatColor.LIGHT_PURPLE+"Archer Queen");
+		ArcherQueenAltar.setItemMeta(helmmeta);
+		
+		ItemStack SpellFactory = new ItemStack(Material.BREWING_STAND_ITEM);
+		ItemMeta SpellFactoryMeta = SpellFactory.getItemMeta();
+		SpellFactoryMeta.setDisplayName(ChatColor.LIGHT_PURPLE+"Spell Factory");
+		SpellFactory.setItemMeta(SpellFactoryMeta);
+		
+		ItemStack Laboratory = new ItemStack(Material.CAULDRON_ITEM);
+		ItemMeta LaboratoryMeta = Laboratory.getItemMeta();
+		LaboratoryMeta.setDisplayName(ChatColor.LIGHT_PURPLE+"Laboratory");
+		Laboratory.setItemMeta(LaboratoryMeta);
+		
 		inv.setItem(1, ArmyCamp);
 		inv.setItem(3, Barracks);
+		inv.setItem(5, SpellFactory);
+		inv.setItem(7, Laboratory);
+		inv.setItem(12, BarbarianKingAltar);
+		inv.setItem(14, ArcherQueenAltar);
 		player.openInventory(inv);
 	}
 	
@@ -168,38 +197,29 @@ public class BuildingShop implements Listener{
 	}
 	private void MainShopClick(InventoryClickEvent event){
 		event.setCancelled(true);
-		if(event.getCurrentItem()==null || !event.getCurrentItem().hasItemMeta()){
-			return;
-		}
 		switch(event.getCurrentItem().getType()){
 		case IRON_PICKAXE:
-			((CommandSender) event.getWhoClicked()).sendMessage("ironPickaxe");
-			event.getWhoClicked().closeInventory();
 			openResourcesPanel((Player) event.getWhoClicked());
 			break;
 		case DIAMOND_SWORD:
-			event.getWhoClicked().closeInventory();
 			openArmyPanel((Player) event.getWhoClicked());
+			break;
+		case DIAMOND:
 			break;
 		default: event.getWhoClicked().closeInventory();
 	}
 	}
 	private void ResourceShopClick(InventoryClickEvent event){
 		event.setCancelled(true);
-		if(event.getCurrentItem()==null || !event.getCurrentItem().hasItemMeta()){
-			((CommandSender) event.getWhoClicked()).sendMessage("resourceshop");
-			return;
-		}
 		TownhallLimit[] thl = TownhallLimit.values();
 		Base base = Base.getBase((Player)event.getWhoClicked());
 		Player player = (Player)event.getWhoClicked();
-		FileConfiguration dataconf = Coc.getPlugin().getdataconffile(player);
 		RelativeBuilding rb;
-
+		Townhall townhall = Townhall.getTownhall((OfflinePlayer) event.getWhoClicked());
 		switch(event.getCurrentItem().getType()){
 		case GOLD_NUGGET:
-			ResourceBuildingSpecs[] spec = new Goldmine(null,0).getBuildingSpecs();
-			if(base.getAmountofBuilding("goldmine")>=thl[dataconf.getInt("townhall.1.level")-1].getMaxGoldmines()){
+			ResourceBuildingSpecs[] spec = new Goldmine(0).getBuildingSpecs();
+			if(base.getAmountofBuilding("goldmine")>=thl[townhall.getLevel()-1].getMaxGoldmines()){
 				player.sendMessage(ChatColor.RED+"[ClashofClans] you have reached the max number of goldmines for this townhall level!");
 				return;
 			}
@@ -207,13 +227,13 @@ public class BuildingShop implements Listener{
 				player.sendMessage(ChatColor.RED+"[ClashofClans] You don't have enough elixir to build this building!");
 			return;
 			}
-			rb = new RelativeBuilding(new Goldmine((Player) event.getWhoClicked(), 1));
+			rb = new RelativeBuilding(new Goldmine(1));
 			rb.putRelativeBuilding((Player)event.getWhoClicked());
 			event.getWhoClicked().closeInventory();
 			break;
 		case GOLD_BLOCK:
-			BuildingSpecs[] spec2 = new GoldStorage(null,0).getBuildingSpecs();
-			if(base.getAmountofBuilding("golstorage")>=thl[dataconf.getInt("townhall.1.level")-1].maxgoldstorage){
+			BuildingSpecs[] spec2 = new GoldStorage(0).getBuildingSpecs();
+			if(base.getAmountofBuilding("golstorage")>=thl[townhall.getLevel()-1].maxgoldstorage){
 				player.sendMessage(ChatColor.RED+"[ClashofClans] you have reached the max number of goldstorages for this townhall level!");
 				return;
 			}
@@ -221,12 +241,12 @@ public class BuildingShop implements Listener{
 				player.sendMessage(ChatColor.RED+"[ClashofClans] You don't have enough elixir to build this building!");
 				return;
 			}
-			rb = new RelativeBuilding(new GoldStorage((Player) event.getWhoClicked(), 1));
+			rb = new RelativeBuilding(new GoldStorage(1));
 			rb.putRelativeBuilding((Player)event.getWhoClicked());
 			event.getWhoClicked().closeInventory();
 			break;
 		case IRON_PICKAXE:	
-			BuildersHut bh = new BuildersHut(null,0);
+			BuildersHut bh = new BuildersHut(0);
 			if(base.getAmountofBuilding("buildershut") >= 5){
 				event.getWhoClicked().closeInventory();
 				player.sendMessage(ChatColor.RED+"[ClashofClans] You did reached the max number of Builder's huts!");
@@ -236,15 +256,15 @@ public class BuildingShop implements Listener{
 				((Player)event.getWhoClicked()).sendMessage(ChatColor.RED+"[ClashofClans] You don't have enough gems to build this building!");
 				return;
 			}
-			rb = new RelativeBuilding(new BuildersHut((Player)event.getWhoClicked(), 1));
+			rb = new RelativeBuilding(new BuildersHut(1));
 			rb.putRelativeBuilding((Player)event.getWhoClicked());
 
 			Resources.Take(BuildersHut.getNextGemCost((Player) event.getWhoClicked()), player);
 			event.getWhoClicked().closeInventory();
 			break;
 		case GHAST_TEAR:	
-			ResourceBuildingSpecs[] spec4 = new ElixirCollector(null,0).getBuildingSpecs();
-			if(base.getAmountofBuilding("elixircollector")>=thl[dataconf.getInt("townhall.1.level")-1].maxelixircollector){
+			ResourceBuildingSpecs[] spec4 = new ElixirCollector(0).getBuildingSpecs();
+			if(base.getAmountofBuilding("elixircollector")>=thl[townhall.getLevel()-1].maxelixircollector){
 				player.sendMessage(ChatColor.RED+"[ClashofClans] you have reached the max number of Elixir Collectors for this townhall level!");
 				return;
 			}
@@ -252,13 +272,13 @@ public class BuildingShop implements Listener{
 				player.sendMessage(ChatColor.RED+"[ClashofClans] You don't have enough gold to build this building!");
 			return;
 			}
-			rb = new RelativeBuilding(new ElixirCollector(player, 1));
+			rb = new RelativeBuilding(new ElixirCollector(1));
 			rb.putRelativeBuilding(player);
 			player.closeInventory();
 			break;
 		case POTION: 
-			StorageBuildingSpecs[] spec5 = new ElixirStorage(null,0).getBuildingSpecs();
-			if(base.getAmountofBuilding("elixirstorage")>=thl[dataconf.getInt("townhall.1.level")-1].maxelixirstorage){
+			StorageBuildingSpecs[] spec5 = new ElixirStorage(0).getBuildingSpecs();
+			if(base.getAmountofBuilding("elixirstorage")>=thl[townhall.getLevel()-1].maxelixirstorage){
 				player.sendMessage(ChatColor.RED+"[ClashofClans] you have reached the max number of Elixir Storages for this townhall level!");
 				return;
 			}
@@ -266,13 +286,13 @@ public class BuildingShop implements Listener{
 				player.sendMessage(ChatColor.RED+"[ClashofClans] You don't have enough gold to build this building!");
 			return;
 			}
-			rb = new RelativeBuilding(new ElixirStorage(player, 1));
+			rb = new RelativeBuilding(new ElixirStorage(1));
 			rb.putRelativeBuilding(player);
 			player.closeInventory();
 			break;
 		case COAL_BLOCK:
-			StorageBuildingSpecs[] spec6 = new DarkElixirStorage(null,0).getBuildingSpecs();
-			if(base.getAmountofBuilding("darkelixirstorage")>=thl[dataconf.getInt("townhall.1.level")-1].getMaxDarkElixirStorage()){
+			StorageBuildingSpecs[] spec6 = new DarkElixirStorage(0).getBuildingSpecs();
+			if(base.getAmountofBuilding("darkelixirstorage")>=thl[townhall.getLevel()-1].getMaxDarkElixirStorage()){
 				player.sendMessage(ChatColor.RED+"[ClashofClans] you have reached the max number of Dark Elixir Storages for this townhall level!");
 				return;
 			}
@@ -280,13 +300,13 @@ public class BuildingShop implements Listener{
 				player.sendMessage(ChatColor.RED+"[ClashofClans] You don't have enough elixir to build this building!");
 			return;
 			}
-			rb = new RelativeBuilding(new DarkElixirStorage(player, 1));
+			rb = new RelativeBuilding(new DarkElixirStorage(1));
 			rb.putRelativeBuilding(player);
 			player.closeInventory();
 			break;
 		case COAL:
-			ResourceBuildingSpecs[] spec7 = new DarkElixirDrill(null,0).getBuildingSpecs();
-			if(base.getAmountofBuilding("darkelixirstorage")>=thl[dataconf.getInt("townhall.1.level")-1].getMaxDarkElixirDrill()){
+			ResourceBuildingSpecs[] spec7 = new DarkElixirDrill(0).getBuildingSpecs();
+			if(base.getAmountofBuilding("darkelixirstorage")>=thl[townhall.getLevel()-1].getMaxDarkElixirDrill()){
 				player.sendMessage(ChatColor.RED+"[ClashofClans] you have reached the max number of Dark Elixir Drills for this townhall level!");
 				return;
 			}
@@ -294,7 +314,7 @@ public class BuildingShop implements Listener{
 				player.sendMessage(ChatColor.RED+"[ClashofClans] You don't have enough elixir to build this building!");
 			return;
 			}
-			rb = new RelativeBuilding(new DarkElixirDrill(player, 1));
+			rb = new RelativeBuilding(new DarkElixirDrill(1));
 			rb.putRelativeBuilding(player);
 			player.closeInventory();
 			break;
@@ -305,19 +325,16 @@ public class BuildingShop implements Listener{
 	}
 	private void ArmyShopClick(InventoryClickEvent event){
 		event.setCancelled(true);
-		if(event.getCurrentItem()==null || !event.getCurrentItem().hasItemMeta()){
-			return;
-		}
 		TownhallLimit[] thl = TownhallLimit.values();
 		Base base = Base.getBase((Player)event.getWhoClicked());
 		Player player = (Player)event.getWhoClicked();
-		FileConfiguration dataconf = Coc.getPlugin().getdataconffile(player);
 		RelativeBuilding rb;
+		Townhall townhall = Townhall.getTownhall((OfflinePlayer) event.getWhoClicked());
 
 		switch(event.getCurrentItem().getType()){
 		case BED:
-			ResourceBuildingSpecs[] spec = new Goldmine(null,0).getBuildingSpecs();
-			if(base.getAmountofBuilding("armycamp")>=thl[dataconf.getInt("townhall.1.level")-1].getMaxGoldmines()){
+			BuildingSpecs[] spec = new ArmyCamp(0).getBuildingSpecs();
+			if(base.getAmountofBuilding("armycamp")>=thl[townhall.getLevel()-1].getMaxArmyCamp()){
 				player.sendMessage(ChatColor.RED+"[ClashofClans] you have reached the max number of army camps for this townhall level!");
 				return;
 			}
@@ -325,8 +342,63 @@ public class BuildingShop implements Listener{
 				player.sendMessage(ChatColor.RED+"[ClashofClans] You don't have enough elixir to build this building!");
 			return;
 			}
-			rb = new RelativeBuilding(new ArmyCamp((Player) event.getWhoClicked(), 1));
+			rb = new RelativeBuilding(new ArmyCamp(1));
 			rb.putRelativeBuilding((Player)event.getWhoClicked());
+			event.getWhoClicked().closeInventory();
+			break;
+		case GOLD_HELMET: 
+			BuildingSpecs[] spec2 = new BarbarianKingAltar(0).getBuildingSpecs();
+			if(base.getAmountofBuilding("barbariankingaltar")>=thl[townhall.getLevel()-1].maxbarbarianking){
+				player.sendMessage(ChatColor.RED+"[ClashofClans] you have reached the max number of barbarian kings!");
+				return;
+			}
+			if(Resources.getDarkElixir(player) <= spec2[0].getUpgradePrice().getAmount()){
+				player.sendMessage(ChatColor.RED+"[ClashofClans] You don't have enough dark elixir to build this building!");
+			return;
+			}
+			rb = new RelativeBuilding(new BarbarianKingAltar(1));
+			rb.putRelativeBuilding(player);
+			event.getWhoClicked().closeInventory();
+			break;
+		case WOOD_SWORD: 
+			BuildingSpecs[] spec3 = new Barracks(0).getBuildingSpecs();
+			if(base.getAmountofBuilding("barracks")>=thl[townhall.getLevel()-1].getMaxBarracks()){
+				player.sendMessage(ChatColor.RED+"[ClashofClans] you have reached the max number of barracks!");
+				return;
+			}
+			if(Resources.getElixir(player) <= spec3[0].getUpgradePrice().getAmount()){
+				player.sendMessage(ChatColor.RED+"[ClashofClans] You don't have enough elixir to build this building!");
+			return;
+			}
+			rb = new RelativeBuilding(new Barracks(1));
+			rb.putRelativeBuilding(player);
+			event.getWhoClicked().closeInventory();
+			break;
+		case LEATHER_HELMET: 
+			BuildingSpecs[] spec4 = new ArcherQueenAltar(0).getBuildingSpecs();
+			if(base.getAmountofBuilding("archerqueenaltar")>=thl[townhall.getLevel()-1].getMaxArcherQueenAltar()){
+				player.sendMessage(ChatColor.RED+"[ClashofClans] you have reached the max number of archer queens!");
+				return;
+			}
+			if(Resources.getDarkElixir(player) <= spec4[0].getUpgradePrice().getAmount()){
+				player.sendMessage(ChatColor.RED+"[ClashofClans] You don't have enough dark elixir to build this building!");
+			return;
+			}
+			rb = new RelativeBuilding(new ArcherQueenAltar(1));
+			rb.putRelativeBuilding(player);
+			event.getWhoClicked().closeInventory();
+			break;
+		case BREWING_STAND_ITEM: 
+			if(base.getAmountofBuilding("spellfactory")>=thl[townhall.getLevel()-1].getMaxSpellFactory()){
+				player.sendMessage(ChatColor.RED+"[ClashofClans] you have reached the max number of spell factories!");
+				return;
+			}
+			if(Resources.getElixir(player) <=  new SpellFactory(0).getBuildingSpecs()[0].getUpgradePrice().getAmount()){
+				player.sendMessage(ChatColor.RED+"[ClashofClans] You don't have enough elixir to build this building!");
+			return;
+			}
+			rb = new RelativeBuilding(new SpellFactory(1));
+			rb.putRelativeBuilding(player);
 			event.getWhoClicked().closeInventory();
 			break;
 		default: event.getWhoClicked().closeInventory();

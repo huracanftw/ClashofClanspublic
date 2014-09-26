@@ -49,6 +49,21 @@
 					<source>1.7</source>
 				</configuration>
 			</plugin>
+			<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-jar-plugin</artifactId>
+    <configuration>
+        <archive>
+            <manifest>
+                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                <addClasspath>true</addClasspath>
+            </manifest>
+            <manifestEntries>
+                <Class-Path>/plugins/ClashofClans/lib/h2-latest.jar</Class-Path>
+            </manifestEntries>
+        </archive>
+    </configuration>
+</plugin>
 		</plugins>
 	</build>
 </project>

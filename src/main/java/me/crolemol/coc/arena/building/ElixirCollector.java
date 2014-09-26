@@ -1,41 +1,27 @@
 package me.crolemol.coc.arena.building;
 
-import java.io.IOException;
-import java.util.Calendar;
-
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
-import org.bukkit.configuration.file.FileConfiguration;
-
 import me.crolemol.coc.Coc;
 import me.crolemol.coc.arena.building.interfaces.BuildingPanel;
 import me.crolemol.coc.arena.building.interfaces.ResourceBuilding;
 import me.crolemol.coc.arena.building.interfaces.ResourceBuildingSpecs;
 import me.crolemol.coc.arena.panels.buildingpanels.ElixirCollectorPanel;
+import me.crolemol.coc.economy.Elixir;
 import me.crolemol.coc.economy.Gold;
 import me.crolemol.coc.economy.Resource;
-import me.crolemol.coc.economy.Resources;
 
-public class ElixirCollector implements ResourceBuilding{
+public class ElixirCollector extends ResourceBuilding{
 	static Coc plugin = Coc.getPlugin();
-	private int BuildingID2;
-	private int level2;
-	private Location loc2;
-	private OfflinePlayer owner2;
-	private boolean isRealBuilding;
-	public ElixirCollector(OfflinePlayer owner,int level){
-		level2 = level;
-		owner2 = owner;
-		isRealBuilding=false;
+	public ElixirCollector(int level){
+		super(level);
 	}
 	
 	private ElixirCollector(OfflinePlayer owner,Location loc,int level,int BuildingID, boolean isreal){
-		BuildingID2 = BuildingID;
-		level2 = level;
-		loc2 = loc;
-		owner2 = owner;
-		isRealBuilding = isreal;
+		super(owner,loc,level,BuildingID,isreal);
 	}
 		
 
@@ -48,69 +34,33 @@ public class ElixirCollector implements ResourceBuilding{
 		if(owner == null){
 			throw new IllegalArgumentException("owner cannot be null");
 		}
-		FileConfiguration dataconf = plugin.getdataconffile(owner);
 		World world = plugin.getServer().getWorld("coc");
-		int x = dataconf.getInt("elixircollector."+BuildingID+".location.x");
-		int y = dataconf.getInt("elixircollector."+BuildingID+".location.y");
-		int z = dataconf.getInt("elixircollector."+BuildingID+".location.z");
-		
+		ResultSet result = plugin
+				.getDataBase().query("SELECT * FROM Buildings WHERE owner = '"
+						+ owner.getUniqueId()
+						+ "' AND BuildingID = "+ BuildingID
+						+ " AND BuildingName = 'elixircollector'");
+		int x = 0;
+		int y = 0;
+		int z = 0;
+		int level = 0;
+		try {
+			x = result.getInt("Location_x");
+			y = result.getInt("Location_y");
+			z = result.getInt("Location_z");
+			level = result.getInt("Level");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		if(y == 0){
 			return null;
 		}
-		
-		return new ElixirCollector(owner,new Location(world,x,y,z),dataconf.getInt("elixircollector."+BuildingID+".level"),BuildingID,true);
-	}
-
-	@Override
-	public int getBuildingID() {
-		return BuildingID2;
-	}
-
-	@Override
-	public int getLevel() {
-		return level2;
-	}
-
-	@Override
-	public Location getLocation() {
-		return loc2;
-	}
-
-	@Override
-	public OfflinePlayer getOwner() {
-		return owner2;
-	}
+		return new ElixirCollector(owner,new Location(world,x,y,z),level,BuildingID,true);	}
 
 	@Override
 	public String getBuildingName() {
 		return "elixircollector";
 	}
-
-	@Override
-	public void setLevel(int level) {
-		level2 = level;
-		if(isRealBuilding() == true){
-			FileConfiguration dataconf = plugin.getdataconffile(owner2);
-			dataconf.set(getBuildingName()+"."+BuildingID2+".level", level2);
-			plugin.saveDataconf(owner2);
-		}
-		
-	}
-
-
-
-
-	@Override
-	public void setLocation(Location location) {
-		loc2 = location;
-		if(isRealBuilding() == true){
-			FileConfiguration dataconf = plugin.getdataconffile(owner2);
-			dataconf.set(getBuildingName()+"."+BuildingID2+".location.x", loc2.getBlockX());
-			dataconf.set(getBuildingName()+"."+BuildingID2+".location.y", loc2.getBlockY());
-			dataconf.set(getBuildingName()+"."+BuildingID2+".location.z", loc2.getBlockZ());
-			plugin.saveDataconf(owner2);
-			}
-		}
 
 		
 	@Override
@@ -125,51 +75,6 @@ public class ElixirCollector implements ResourceBuilding{
 		if(getLevel() == 0){return 0;}
 		specsElixirCollector[] specs2 = specsElixirCollector.values();
 		return specs2[getLevel()-1].getCapacity();
-	}
-
-	@Override
-	public int getCollectable() {
-		if(getLevel() == 0){return 0;}
-		if(isRealBuilding() == false){return 0;}
-		FileConfiguration dataconf = plugin.getdataconffile(owner2);
-		specsElixirCollector[] spec = (specsElixirCollector[]) getBuildingSpecs();
-		Calendar cal = Calendar.getInstance();
-		Long caltime = cal.getTimeInMillis()/60/1000;
-		Long time1 = dataconf.getLong(getBuildingName()+"."+BuildingID2+".lastcollect");
-		double time2 = caltime-time1;
-		int elixir = (int) (time2*Math.floor(spec[level2-1].getProduction()/60));
-		return elixir;
-	}
-
-	@Override
-	public void Collect() {
-		if(getLevel() == 0){return;}
-		if(isRealBuilding() == false){return;}
-		int collect = getCollectable();
-		FileConfiguration dataconf = plugin.getdataconffile(owner2);
-		Calendar cal = Calendar.getInstance();
-		Long caltime = cal.getTimeInMillis()/60/1000;
-		dataconf.set(getBuildingName()+"."+BuildingID2+".lastcollect", caltime);
-		try {
-			dataconf.save(plugin.getdatafile(owner2));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		Resources.giveElixir(owner2, collect);
-		
-	}
-
-	@Override
-	public void setCollectable(int collectable) {
-		Calendar cal = Calendar.getInstance();
-		Long caltime = cal.getTimeInMillis()/60/1000;
-		if(level2 == 0){return;}
-		if(isRealBuilding() == false){return;}
-		Long lastcollect;
-		double time = collectable / (getProduction() / 60);
-		lastcollect = (long) (caltime - time);
-		plugin.getdataconffile(owner2).set(getBuildingName()+"."+BuildingID2+".lastcollect", lastcollect);
-		
 	}
 
 	public enum specsElixirCollector implements ResourceBuildingSpecs{
@@ -249,22 +154,10 @@ public class ElixirCollector implements ResourceBuilding{
 	public BuildingPanel getBuildingPanel() {
 		return new ElixirCollectorPanel(this);
 	}
-	@Override
-	public boolean isUpgrading() {
-		if(Coc.getPlugin().getdataconffile(owner2).contains(getBuildingName()+"."+getBuildingID()+".upgrade")){
-		return true;	
-		}else{
-			return false;
-		}
-
-	}
-
-
-
 
 	@Override
-	public boolean isRealBuilding() {
-		return isRealBuilding;
+	public Resource getProductionType() {
+		return new Elixir(0);
 	}
 
 }

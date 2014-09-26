@@ -1,5 +1,8 @@
 package me.crolemol.coc.arena.building;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import me.crolemol.coc.Coc;
 import me.crolemol.coc.arena.building.interfaces.Building;
 import me.crolemol.coc.arena.building.interfaces.BuildingPanel;
@@ -11,59 +14,44 @@ import me.crolemol.coc.economy.Resource;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
-import org.bukkit.configuration.file.FileConfiguration;
 
-public class Townhall implements Building{
+public class Townhall extends Building{
 	static Coc plugin = Coc.getPlugin();
-	private int level2;
-	private Location loc2;
-	private OfflinePlayer owner2;
-	private final int BuildingID2 = 1;
-	private boolean isRealBuilding;
-	public Townhall(OfflinePlayer owner,int level){
-		level2 = level;
-		owner2 = owner;
-		isRealBuilding=false;
+	public Townhall(int level){
+		super(level);
 	}
 	
 	private Townhall(OfflinePlayer owner,Location loc,int level, boolean isreal){
-		level2 = level;
-		loc2 = loc;
-		owner2 = owner;
-		isRealBuilding = isreal;
+			super(owner,loc,level,1,isreal);
 	}
 	
 	public static Townhall getTownhall(
 			OfflinePlayer owner) {
-		FileConfiguration dataconf = plugin.getdataconffile(owner);
+		if(owner == null){
+			throw new IllegalArgumentException("owner cannot be null");
+		}
 		World world = plugin.getServer().getWorld("coc");
-		int x = dataconf.getInt("townhall.1.location.x");
-		int y = dataconf.getInt("townhall.1.location.x");
-		int z = dataconf.getInt("townhall.1.location.x");
-		
-		return new Townhall(owner,new Location(world,x,y,z),dataconf.getInt("townhall.1.level"),true);
-	}
+		ResultSet result = plugin
+				.getDataBase()
+				.query("SELECT * FROM Buildings WHERE owner = '"
+						+ owner.getUniqueId()
+						+ "' AND BuildingID = "+ 1
+						+ " AND BuildingName = 'townhall'");
+		int x = 0;
+		int y = 0;
+		int z = 0;
+		int level = 0;
+		try {
+			x = result.getInt("Location_x");
+			y = result.getInt("Location_y");
+			z = result.getInt("Location_z");
+			level = result.getInt("Level");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return new Townhall(owner,new Location(world,x,y,z),level,true);	}
 	
-
-	@Override
-	public int getBuildingID() {
-		return BuildingID2;
-	}
-
-	@Override
-	public int getLevel() {
-		return level2;
-	}
-
-	@Override
-	public Location getLocation() {
-		return loc2;
-	}
-
-	@Override
-	public OfflinePlayer getOwner() {
-		return owner2;
-	}
 
 	@Override
 	public String getBuildingName() {
@@ -116,48 +104,13 @@ public class Townhall implements Building{
 			
 			return spec.values();
 		}
-
-		@Override
-		public void setLevel(int level) {
-			level2 = level;
-			if(BuildingID2 != 0){
-				plugin.getdataconffile(owner2).set(getBuildingName()+"."+BuildingID2+".level", level2);
-				plugin.saveDataconf(owner2);
-			}
 			
-		}
 
-
-		@Override
-		public void setLocation(Location location) {
-			loc2 = location;
-			if(BuildingID2 != 0){
-				plugin.getdataconffile(owner2).set(getBuildingName()+"."+BuildingID2+".location.x", loc2.getBlockX());
-				plugin.getdataconffile(owner2).set(getBuildingName()+"."+BuildingID2+".location.y", loc2.getBlockY());
-				plugin.getdataconffile(owner2).set(getBuildingName()+"."+BuildingID2+".location.z", loc2.getBlockZ());
-				plugin.saveDataconf(owner2);
-			}
-			
-		}
-		@Override
-		public boolean isUpgrading() {
-			if(Coc.getPlugin().getdataconffile(owner2).contains(getBuildingName()+"."+getBuildingID()+".upgrade")){
-			return true;	
-			}else{
-				return false;
-			}
-
-		}
 		
 		@Override
 		public BuildingPanel getBuildingPanel() {
 			TownhallPanel gbp = new TownhallPanel(this);
 			return gbp;
-		}
-
-		@Override
-		public boolean isRealBuilding() {
-			return isRealBuilding;
 		}
 
 

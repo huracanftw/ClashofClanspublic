@@ -1,10 +1,9 @@
 package me.crolemol.coc.scoreboard;
 
-import me.crolemol.coc.Coc;
+import me.crolemol.coc.economy.Resources;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -17,21 +16,20 @@ public class ScoreboardApi {
 	
 	@SuppressWarnings("deprecation")
 	public void setCurrencyBoard(Player player){
-		FileConfiguration dataconf = Coc.getPlugin().getdataconffile(player);
 		Scoreboard board = manager.getNewScoreboard();
 		Objective objective = board.registerNewObjective("test", "dummy");
 		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 		objective.setDisplayName(player.getName());
 		Score score = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.GOLD+"Gold"));
-		score.setScore(dataconf.getInt("Gold"));
+		score.setScore(Resources.getGold(player));
 		Score score2 = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.LIGHT_PURPLE+"Elixir"));
-		score2.setScore(dataconf.getInt("Elixir"));
-		if(dataconf.getInt("DarkElixir") != 0){
+		score2.setScore(Resources.getElixir(player));
+		if(Resources.getDarkElixir(player) != 0){
 		Score score3 = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.GRAY+"Dark Elixir"));
-		score3.setScore(dataconf.getInt("DarkElixir"));
+		score3.setScore(Resources.getDarkElixir(player));
 		}
 		Score score4 = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.GREEN+"Gems"));
-		score4.setScore(dataconf.getInt("Gems"));
+		score4.setScore(Resources.getGems(player));
 		player.setScoreboard(board);
 	}
 	public static void removeCurrencyBoardt(Player player){

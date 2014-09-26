@@ -1,5 +1,7 @@
 package me.crolemol.coc.arena;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +11,6 @@ import me.crolemol.coc.arena.events.BuildingInteractEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -35,11 +36,26 @@ public class InteractStick implements Listener{
 		Base arena = Base.getBase(player);
 		if(arena.containsbuildings() == null){return;}
 		List<String> contains = arena.containsbuildings();
-		FileConfiguration dataconf = plugin.getdataconffile(player);
-		for(Buildingspecs building : Buildingspecs.values()){
+		for(BuildingType building : BuildingType.values()){
 			if(contains.contains(building.getName())){
 				for(int counter=1;counter<=arena.getAmountofBuilding(building.getName());counter++){
-				Location loc1 = new Location(plugin.getServer().getWorld("coc"), dataconf.getInt(building.getName()+"."+counter+".location.x"), dataconf.getInt(building.getName()+"."+counter+".location.y"), dataconf.getInt(building.getName()+"."+counter+".location.z"));
+					int x = 0;
+					int y = 0;
+					int z = 0;
+					try {
+						ResultSet result = plugin
+								.getDataBase()
+								.query("SELECT Location_x,Location_y,Location_z FROM Buildings WHERE owner = '"
+										+ player.getUniqueId()
+										+ "' AND BuildingID = "+ counter
+										+ " AND BuildingName = '"+building.getName()+"'");
+						x = result.getInt("Location_x");
+						y = result.getInt("Location_y");
+						z = result.getInt("Location_z");
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				Location loc1 = new Location(plugin.getServer().getWorld("coc"), x, y, z);
 				Location loc2 = new Location(plugin.getServer().getWorld("coc"), loc1.getBlockX()+building.getWidth(), loc1.getBlockY(), loc1.getBlockZ()+building.getLength());
 				if(checkIfInArea(loc1,loc2,targetblock) == true){
 					BuildingInteractEvent event = new BuildingInteractEvent(arena.getBuilding(building.getName(), counter, player),player);

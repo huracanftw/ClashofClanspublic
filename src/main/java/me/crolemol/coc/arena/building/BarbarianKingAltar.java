@@ -10,21 +10,22 @@ import me.crolemol.coc.Coc;
 import me.crolemol.coc.arena.building.interfaces.Building;
 import me.crolemol.coc.arena.building.interfaces.BuildingPanel;
 import me.crolemol.coc.arena.building.interfaces.BuildingSpecs;
-import me.crolemol.coc.arena.panels.buildingpanels.ArmyCampPanel;
-import me.crolemol.coc.economy.Elixir;
+import me.crolemol.coc.arena.panels.buildingpanels.BarbarianKingAltarPanel;
+import me.crolemol.coc.economy.DarkElixir;
 import me.crolemol.coc.economy.Resource;
 
-public class ArmyCamp extends Building{
+public class BarbarianKingAltar extends Building{
+
 	static Coc plugin = Coc.getPlugin();
 	
-	public ArmyCamp(int level){
-		super(level);
+	public BarbarianKingAltar(int level){
+			super(level);
 	}
-	private ArmyCamp(OfflinePlayer owner,Location loc,int level,int BuildingID,boolean isreal){
-		super(owner,loc,level,BuildingID,isreal);
+	private BarbarianKingAltar(OfflinePlayer owner,Location loc,int level,int BuildingID,boolean isreal){
+	super(owner,loc,level,BuildingID,isreal);
 	}
 	
-	public static ArmyCamp getArmyCamp(int BuildingID,
+	public static BarbarianKingAltar getBarbarianKingAltar(int BuildingID,
 			OfflinePlayer owner) {
 		if(BuildingID == 0){
 			throw new IllegalArgumentException("BuildingID cannot be 0");
@@ -34,11 +35,10 @@ public class ArmyCamp extends Building{
 		}
 		World world = plugin.getServer().getWorld("coc");
 		ResultSet result = plugin
-				.getDataBase()
-				.query("SELECT * FROM Buildings WHERE owner = '"
+				.getDataBase().query("SELECT * FROM Buildings WHERE owner = '"
 						+ owner.getUniqueId()
 						+ "' AND BuildingID = "+ BuildingID
-						+ " AND BuildingName = 'armycamp'");
+						+ " AND BuildingName = 'barbariankingaltar'");
 		int x = 0;
 		int y = 0;
 		int z = 0;
@@ -54,36 +54,26 @@ public class ArmyCamp extends Building{
 		if(y == 0){
 			return null;
 		}
-		return new ArmyCamp(owner,new Location(world,x,y,z),level,BuildingID,true);
-	}
+		return new BarbarianKingAltar(owner,new Location(world,x,y,z),level,BuildingID,true);	}
 
 	@Override
 	public String getBuildingName() {
-		return "armycamp";
+		return "barbariankingaltar";
 	}
-		public enum ArmyCampSpec implements BuildingSpecs{
-			lv1(new Elixir(250),17,5,400,1,20),
-			lv2(new Elixir(2500),60,60,500,2,30),
-			lv3(new Elixir(10000),103,180,600,3,35),
-			lv4(new Elixir(10000),169,480,700,4,40),
-			lv5(new Elixir(250000),293,1440,800,5,45),
-			lv6(new Elixir(750000),509,4320,1000,6,50),
-			lv7(new Elixir(2250000),657,7200,1200,9,55),
-			lv8(new Elixir(6750000),929,14400,1400,10,60);
+		public enum BarbarianKingAltarSpecs implements BuildingSpecs{
+			lv1(new DarkElixir(10000),0,0,250,7);
 			
-			private Resource goldprice2;
+			private Resource darkelixirprice;
 			private int gainexp2;
 			private int time2;
 			private int health2;
-			private int troopcapacity;
 			private int minthlevel;
-			ArmyCampSpec(Resource goldprice, int gainexp,int time,int health, int minthlevel,int troopcapacity){
-				goldprice2 = goldprice;
+			BarbarianKingAltarSpecs(Resource darkelixirprice, int gainexp,int time,int health, int minthlevel){
+				this.darkelixirprice = darkelixirprice;
 				gainexp2 = gainexp;
 				time2 = time;
 				health2 = health;
 				this.minthlevel = minthlevel;
-				this.troopcapacity = troopcapacity;
 				
 			}
 			public int getUpgradeTime(){
@@ -94,7 +84,7 @@ public class ArmyCamp extends Building{
 			}
 			@Override
 			public Resource getUpgradePrice() {
-				return goldprice2;
+				return darkelixirprice;
 			}
 			@Override
 			public int getGainExpOnUpgrade() {
@@ -104,20 +94,18 @@ public class ArmyCamp extends Building{
 			public int getMinTownhallLevel() {
 				return minthlevel;
 			}
-			public int getTroopcapacity(){
-				return troopcapacity;
-			}
 		}
 		@Override
-		public ArmyCampSpec[] getBuildingSpecs() {
+		public BarbarianKingAltarSpecs[] getBuildingSpecs() {
 			
-			return ArmyCampSpec.values();
+			return BarbarianKingAltarSpecs.values();
 		}
-
 
 		@Override
 		public BuildingPanel getBuildingPanel() {
-			ArmyCampPanel acp = new ArmyCampPanel(this);
+			BarbarianKingAltarPanel acp = new BarbarianKingAltarPanel(this);
 			return acp;
 		}
+
+
 }

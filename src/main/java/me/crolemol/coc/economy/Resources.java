@@ -1,28 +1,20 @@
 package me.crolemol.coc.economy;
 
-import java.io.File;
-import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import me.crolemol.coc.Coc;
 import me.crolemol.coc.scoreboard.ScoreboardApi;
 
 import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 public class Resources {
 	private static Coc plugin = Coc.getPlugin();
 	@SuppressWarnings("deprecation")
 	public static void giveGold(OfflinePlayer receiver,int amount){
-		FileConfiguration dataconf = plugin.getdataconffile(receiver);
-		dataconf.set("Gold", getGold(receiver)+amount);
-		Coc.getPlugin();
-		File datafile = plugin.getdatafile(receiver);
-		try {
-			dataconf.save(datafile);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		int gold = getGold(receiver)+amount;
+		Coc.getPlugin().getDataBase().query("UPDATE Resources SET Gold="+gold+" WHERE owner LIKE '"+receiver.getUniqueId()+"'");
 		ScoreboardApi sb = new ScoreboardApi();
 		if(plugin.getServer().getPlayer(receiver.getName()) != null){
 		sb.setCurrencyBoard((Player)receiver);
@@ -30,141 +22,134 @@ public class Resources {
 	}
 	@SuppressWarnings("deprecation")
 	public static void giveElixir(OfflinePlayer receiver,int amount){
-		FileConfiguration dataconf = plugin.getdataconffile(receiver);
-		dataconf.set("Elixir", getElixir(receiver)+amount);
-		Coc.getPlugin();
-		File datafile = plugin.getdatafile(receiver);
-		try {
-			dataconf.save(datafile);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		int elixir = getElixir(receiver)+amount;
+		Coc.getPlugin().getDataBase().query("UPDATE Resources SET Elixir="+elixir+" WHERE owner LIKE '"+receiver.getUniqueId()+"'");
 		ScoreboardApi sb = new ScoreboardApi();
 		if(plugin.getServer().getPlayer(receiver.getName()) != null){
-			sb.setCurrencyBoard((Player)receiver);
+		sb.setCurrencyBoard((Player)receiver);
 		}
 	}
 	@SuppressWarnings("deprecation")
 	public static void giveGems(OfflinePlayer receiver,int amount){
-		FileConfiguration dataconf = plugin.getdataconffile(receiver);
-		dataconf.set("Gems", getGems(receiver)+amount);
-		Coc.getPlugin();
-		File datafile = plugin.getdatafile(receiver);
-		try {
-			dataconf.save(datafile);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		int Gems = getGems(receiver)+amount;
+		Coc.getPlugin().getDataBase().query("UPDATE Resources SET Gems="+Gems+" WHERE owner LIKE '"+receiver.getUniqueId()+"'");
 		ScoreboardApi sb = new ScoreboardApi();
 		if(plugin.getServer().getPlayer(receiver.getName()) != null){
-			sb.setCurrencyBoard((Player)receiver);
+		sb.setCurrencyBoard((Player)receiver);
 		}
 	}
 	@SuppressWarnings("deprecation")
 	public static void giveDarkElixir(OfflinePlayer receiver,int amount){
-		FileConfiguration dataconf = plugin.getdataconffile(receiver);
-		dataconf.set("DarkElixir", getDarkElixir(receiver)+amount);
-		Coc.getPlugin();
-		File datafile = plugin.getdatafile(receiver);
-		try {
-			dataconf.save(datafile);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		int darkelixir = getDarkElixir(receiver)+amount;
+		Coc.getPlugin().getDataBase().query("UPDATE Resources SET DarkElixir="+darkelixir+" WHERE owner LIKE '"+receiver.getUniqueId()+"'");
 		ScoreboardApi sb = new ScoreboardApi();
 		if(plugin.getServer().getPlayer(receiver.getName()) != null){
-			sb.setCurrencyBoard((Player)receiver);
+		sb.setCurrencyBoard((Player)receiver);
 		}
 	}
+	
 	@SuppressWarnings("deprecation")
 	public static void takeGold(OfflinePlayer receiver,int amount){
-		FileConfiguration dataconf = plugin.getdataconffile(receiver);
-		dataconf.set("Gold", getGold(receiver)-amount);
-		Coc.getPlugin();
-		File datafile = plugin.getdatafile(receiver);
-		try {
-			dataconf.save(datafile);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		int gold = getGold(receiver)-amount;
+		Coc.getPlugin().getDataBase().query("UPDATE Resources SET Gold="+gold+" WHERE owner LIKE '"+receiver.getUniqueId()+"'");
 		ScoreboardApi sb = new ScoreboardApi();
 		if(plugin.getServer().getPlayer(receiver.getName()) != null){
-			sb.setCurrencyBoard((Player)receiver);
+		sb.setCurrencyBoard((Player)receiver);
 		}
 	}
 	@SuppressWarnings("deprecation")
 	public static void takeElixir(OfflinePlayer receiver,int amount){
-		FileConfiguration dataconf = plugin.getdataconffile(receiver);
-		dataconf.set("Elixir", getElixir(receiver)-amount);
-		Coc.getPlugin();
-		File datafile = plugin.getdatafile(receiver);
-		try {
-			dataconf.save(datafile);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		int elixir = getElixir(receiver)-amount;
+		Coc.getPlugin().getDataBase().query("UPDATE Resources SET Elixir="+elixir+" WHERE owner LIKE '"+receiver.getUniqueId()+"'");
 		ScoreboardApi sb = new ScoreboardApi();
 		if(plugin.getServer().getPlayer(receiver.getName()) != null){
-			sb.setCurrencyBoard((Player)receiver);
+		sb.setCurrencyBoard((Player)receiver);
 		}
 	}
 	@SuppressWarnings("deprecation")
 	public static void takeDarkElixir(OfflinePlayer receiver,int amount){
-		FileConfiguration dataconf = plugin.getdataconffile(receiver);
-		dataconf.set("DarkElixir", getDarkElixir(receiver)-amount);
-		Coc.getPlugin();
-		File datafile = plugin.getdatafile(receiver);
-		try {
-			dataconf.save(datafile);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		int darkelixir = getDarkElixir(receiver)-amount;
+		Coc.getPlugin().getDataBase().query("UPDATE Resources SET DarkElixir="+darkelixir+" WHERE owner LIKE '"+receiver.getUniqueId()+"'");
 		ScoreboardApi sb = new ScoreboardApi();
 		if(plugin.getServer().getPlayer(receiver.getName()) != null){
-			sb.setCurrencyBoard((Player)receiver);
+		sb.setCurrencyBoard((Player)receiver);
 		}
 		}
 		@SuppressWarnings("deprecation")
 		public static void takeGems(OfflinePlayer receiver,int amount){
-			FileConfiguration dataconf = plugin.getdataconffile(receiver);
-			dataconf.set("Gems", getGems(receiver)-amount);
-			Coc.getPlugin();
-			File datafile = plugin.getdatafile(receiver);
-			try {
-				dataconf.save(datafile);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			int Gems = getGems(receiver)-amount;
+			Coc.getPlugin().getDataBase().query("UPDATE Resources SET Gems="+Gems+" WHERE owner LIKE '"+receiver.getUniqueId()+"'");
 			ScoreboardApi sb = new ScoreboardApi();
 			if(plugin.getServer().getPlayer(receiver.getName()) != null){
-				sb.setCurrencyBoard((Player)receiver);
+			sb.setCurrencyBoard((Player)receiver);
 			}
 	}
 	public static void Take(Resource resource, OfflinePlayer player){
 		if(resource instanceof Gold){
 			takeGold(player,resource.getAmount());
 		}
-		if(resource instanceof Elixir){
+		else if(resource instanceof Elixir){
 			takeElixir(player,resource.getAmount());
 		}
-		if(resource instanceof Gem){
+		else if(resource instanceof Gem){
 			takeGems(player,resource.getAmount());
+		}	
+		else if(resource instanceof DarkElixir){
+			takeDarkElixir(player,resource.getAmount());
+		}
+	}
+	public static void Give(Resource resource, OfflinePlayer player){
+		if(resource instanceof Gold){
+			giveGold(player,resource.getAmount());
+		}
+		else if(resource instanceof Elixir){
+			giveElixir(player,resource.getAmount());
+		}
+		else if(resource instanceof Gem){
+			giveGems(player,resource.getAmount());
+		}
+		else if(resource instanceof DarkElixir){
+			giveDarkElixir(player,resource.getAmount());
 		}
 	}
 	public static int getGems(OfflinePlayer player){
-		FileConfiguration dataconf = plugin.getdataconffile(player);
-		return dataconf.getInt("Gems");
+		ResultSet result = Coc.getPlugin().getDataBase().query("SELECT Gems FROM Resources WHERE owner LIKE '"+player.getUniqueId()+"'");
+		int gems = 0;
+		try {
+			gems = result.getInt("Gems");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return gems;
 	}
 	public static int getGold(OfflinePlayer player){
-		FileConfiguration dataconf = plugin.getdataconffile(player);
-		return dataconf.getInt("Gold");
+		ResultSet result = Coc.getPlugin().getDataBase().query("SELECT Gold FROM Resources WHERE owner LIKE '"+player.getUniqueId()+"'");
+		int gold = 0;
+		try {
+			gold = result.getInt("Gold");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return gold;
 	}
 	public static int getElixir(OfflinePlayer player){
-		FileConfiguration dataconf = plugin.getdataconffile(player);
-		return dataconf.getInt("Elixir");
+		ResultSet result = Coc.getPlugin().getDataBase().query("SELECT Elixir FROM Resources WHERE owner LIKE '"+player.getUniqueId()+"'");
+		int elixir = 0;
+		try {
+			elixir = result.getInt("Elixir");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return elixir;
 	}
 	public static int getDarkElixir(OfflinePlayer player){
-		FileConfiguration dataconf = plugin.getdataconffile(player);
-		return dataconf.getInt("DarkElixir");
-	}
+		ResultSet result = Coc.getPlugin().getDataBase().query("SELECT DarkElixir FROM Resources WHERE owner LIKE '"+player.getUniqueId()+"'");
+		int darkelixir = 0;
+		try {
+			darkelixir = result.getInt("DarkElixir");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return darkelixir;
+		}
 }

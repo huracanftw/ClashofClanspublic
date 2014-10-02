@@ -12,25 +12,22 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import me.crolemol.coc.Coc;
 import me.crolemol.coc.arena.BuildingType;
-import me.crolemol.coc.arena.building.ArmyCamp;
-import me.crolemol.coc.arena.building.ArmyCamp.ArmyCampSpec;
+import me.crolemol.coc.arena.building.Barracks;
+import me.crolemol.coc.arena.building.Barracks.BarracksSpecs;
 import me.crolemol.coc.arena.building.interfaces.BuildingPanel;
 import me.crolemol.coc.utils.PanelUtils;
 import me.crolemol.coc.utils.TimetoGemCalc;
 
-public class ArmyCampPanel implements BuildingPanel{
-	ArmyCamp building;
-	
-	public ArmyCampPanel(ArmyCamp building){
+public class BarracksPanel implements BuildingPanel{
+	Barracks building;
+	public BarracksPanel(Barracks building){
 		this.building = building;
-
 	}
-
 	@Override
-	public Inventory getInventory(){
-		ArmyCampSpec[] spec = building.getBuildingSpecs();
+	public Inventory getInventory() {
+		BarracksSpecs[] spec = building.getBuildingSpecs();
 		Coc.getPlugin();
-		Inventory inv2 = Bukkit.createInventory(null, 9, "Army Camp");
+		Inventory inv2 = Bukkit.createInventory(null, 9, "Barracks");
 		ItemStack Info = new ItemStack(Material.BOOK_AND_QUILL);
 		ItemMeta InfoMeta = Info.getItemMeta();
 		InfoMeta.setDisplayName(ChatColor.LIGHT_PURPLE+"Info");
@@ -41,13 +38,12 @@ public class ArmyCampPanel implements BuildingPanel{
 		if(building.getLevel() != 0){
 			list.add("Level: "+building.getLevel());
 			list.add("Health: "+ spec[building.getLevel()].getHealth());
-			list.add("Troop Capacity: "+ spec[building.getLevel()-1].getTroopcapacity());
 			}
 		InfoMeta.setLore(list);
 		Info.setItemMeta(InfoMeta); 
 		
 		ItemStack Upgrade = null;
-		if(building.getLevel() <= BuildingType.ArmyCamp.getMaxLevel()){
+		if(building.getLevel() <= BuildingType.Barracks.getMaxLevel()){
 			Upgrade = new ItemStack(Material.IRON_PICKAXE);
 			ItemMeta UpgradeMeta = Upgrade.getItemMeta();
 			UpgradeMeta.setDisplayName(ChatColor.LIGHT_PURPLE+"Upgrade");
@@ -65,7 +61,10 @@ public class ArmyCampPanel implements BuildingPanel{
 		UpgradeMeta.setLore(list2);
 		Upgrade.setItemMeta(UpgradeMeta); 
 		}
-
+		ItemStack Train = new ItemStack(Material.STONE_SWORD);
+		ItemMeta TrainMeta = Train.getItemMeta();
+		TrainMeta.setDisplayName(ChatColor.LIGHT_PURPLE+"Train troops");
+		Train.setItemMeta(TrainMeta);
 		
 		ItemStack Speed = new ItemStack(Material.EMERALD);
 		ItemMeta SpeedMeta = Speed.getItemMeta();
@@ -79,14 +78,14 @@ public class ArmyCampPanel implements BuildingPanel{
 		Speed.setItemMeta(SpeedMeta);
 		
 		inv2.setItem(0, Info);
-		if(building.getLevel() <= BuildingType.ArmyCamp.getMaxLevel()){
+		if(building.getLevel() <= BuildingType.Barracks.getMaxLevel()){
 		inv2.setItem(8, Upgrade);
 		}
 		if(building.isUpgrading() == true){
 			inv2.setItem(7, Speed);
 		}
+		inv2.setItem(1, Train);
 		return inv2;
 	}
-
 
 }

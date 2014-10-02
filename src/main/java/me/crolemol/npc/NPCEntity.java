@@ -304,4 +304,5 @@ public class NPCEntity extends EntityPlayer implements NPC {
 			return;
 		} 
 	}
+
 }

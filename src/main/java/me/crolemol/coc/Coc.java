@@ -26,16 +26,11 @@ public class Coc extends JavaPlugin {
 	protected static Coc plugin;
 	private File generalFile;
 	protected FileConfiguration generalConf;
-	protected File UUIDFile;
-	protected FileConfiguration UUIDConf;
 	private static SQLite db;
 
 	@Override
 	public void onEnable() {
 		plugin = this;
-		UUIDFile = new File(this.getDataFolder() + "/data/ArenaUUIDS.yml");
-		UUIDConf = YamlConfiguration.loadConfiguration(UUIDFile);
-		this.saveResource("lib/h2-latest.jar", false);
 		sqlConnection();
 		if (!(this.getServer().getWorlds().contains(this.getServer().getWorld(
 				"coc")))) {
@@ -56,13 +51,6 @@ public class Coc extends JavaPlugin {
 		generalConf.options().copyDefaults(true);
 		try {
 			generalConf.save(getGeneralFile());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		UUIDConf.addDefault("UUIDCounter", 0);
-		UUIDConf.options().copyDefaults(true);
-		try {
-			UUIDConf.save(UUIDFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -104,14 +92,6 @@ public class Coc extends JavaPlugin {
 
 	public static Coc getPlugin() {
 		return plugin;
-	}
-
-	public FileConfiguration getUUIDConf() {
-		return UUIDConf;
-	}
-
-	public File getUUIDFile() {
-		return UUIDFile;
 	}
 
 	private void saveresources() {
@@ -166,8 +146,10 @@ public class Coc extends JavaPlugin {
 				+ "'Elixir' int NOT NULL,'DarkElixir' int NOT NULL,'Gems' int NOT NULL)").close();
 		db.query("CREATE TABLE IF NOT EXISTS `Buildings`("
 				+ "'owner' TEXT NOT NULL,'BuildingName' varchar(20) NOT NULL,'Location_x' int NOT NULL,"
-				+ "'Location_y' int NOT NULL,'Location_z' int NOT NULL,'Level' int(2),'BuildingID' int(2),'Upgrade' int ,'LastCollect' int)").close();;
-	db.getConnection().commit();
+				+ "'Location_y' int NOT NULL,'Location_z' int NOT NULL,'Level' int(2),'BuildingID' int(2),'Upgrade' int ,'LastCollect' int)").close();
+		db.query("CREATE TABLE IF NOT EXISTS 'Troops'("
+				+ "'owner' TEXT NOT NULL,'entityid' TEXT NOT NULL,'Level' int,'armycampID' int(2),'SoldierType' TEXT NOT NULL,PRIMARY KEY(entityid))").close();
+				db.getConnection().commit();
 	}
 
 	public SQLite getDataBase() {

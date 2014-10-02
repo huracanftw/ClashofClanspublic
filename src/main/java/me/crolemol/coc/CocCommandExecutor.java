@@ -6,8 +6,8 @@ import java.sql.Statement;
 
 import me.crolemol.coc.arena.Base;
 import me.crolemol.coc.arena.InteractStick;
-import me.crolemol.coc.army.troops.troops.Barbarian;
 import me.crolemol.coc.scoreboard.ScoreboardApi;
+import me.crolemol.coc.utils.FlyingBalloonBlock;
 
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -38,8 +38,8 @@ public class CocCommandExecutor implements CommandExecutor {
 						InteractStick.getInteractStick(player);
 						ScoreboardApi sb = new ScoreboardApi();
 						sb.setCurrencyBoard(player);
-						Barbarian.spawnBarbarian(player.getLocation(), player,
-								1);
+						FlyingBalloonBlock block = new FlyingBalloonBlock(Material.GOLD_BLOCK,(byte) 0);
+						block.spawn(player.getLocation());
 						return true;
 					} else {
 						Base.newBase(player);

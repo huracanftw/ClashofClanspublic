@@ -8,6 +8,7 @@ import java.util.Map;
 
 import me.crolemol.coc.Coc;
 import me.crolemol.coc.arena.building.ArmyCamp;
+import me.crolemol.coc.arena.building.Barracks;
 import me.crolemol.coc.arena.building.DarkElixirDrill;
 import me.crolemol.coc.arena.building.DarkElixirStorage;
 import me.crolemol.coc.arena.building.ElixirCollector;
@@ -19,10 +20,11 @@ import me.crolemol.coc.arena.building.UpgradeBuilding;
 import me.crolemol.coc.arena.building.interfaces.Building;
 import me.crolemol.coc.arena.building.interfaces.BuildingSpecs;
 import me.crolemol.coc.arena.events.BuildingInteractEvent;
+import me.crolemol.coc.army.troops.Soldier;
+import me.crolemol.coc.army.troops.troops.Barbarian;
 import me.crolemol.coc.economy.Resources;
 import me.crolemol.coc.utils.PanelUtils;
 import me.crolemol.coc.utils.TimetoGemCalc;
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,6 +35,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 public class PanelClick implements Listener{
 	Coc plugin  = Coc.getPlugin();
 	private static Map<String,Building> staticbuilding = new HashMap<>();
+	private boolean dostaticbuildingremove = true;
 	@EventHandler
 	private void onInventoryClick(InventoryClickEvent event){
 		if(event.getInventory().getName().equals("Townhall")){
@@ -53,6 +56,10 @@ public class PanelClick implements Listener{
 			DarkElixirDrillPanelClick(event);
 		}else if(event.getInventory().getName().equals("Army Camp")){
 			ArmyCampPanelClick(event);
+		}else if(event.getInventory().getName().equals("Barracks")){
+			BarracksPanelClick(event);
+		}else if(event.getInventory().getName().equals("Train Troops")){
+			TrainTroopsPanelClick(event);
 		}
 			
 		
@@ -446,7 +453,6 @@ public class PanelClick implements Listener{
 	private void ArmyCampPanelClick(InventoryClickEvent event){		
 		if(staticbuilding.get(event.getWhoClicked().getName()) == null){return;}
 		Player player = (Player) event.getWhoClicked();
-
 		ArmyCamp building = (ArmyCamp) staticbuilding.get(event.getWhoClicked().getName());
 		event.setCancelled(true);
 		if(event.getCurrentItem()==null || !event.getCurrentItem().hasItemMeta()){
@@ -491,9 +497,67 @@ public class PanelClick implements Listener{
 			}
 		}
 	
+	private void BarracksPanelClick(InventoryClickEvent event){
+		if(staticbuilding.get(event.getWhoClicked().getName()) == null){return;}
+		Player player = (Player) event.getWhoClicked();
+		Barracks building = (Barracks) staticbuilding.get(event.getWhoClicked().getName());
+		event.setCancelled(true);
+		if(event.getCurrentItem()==null || !event.getCurrentItem().hasItemMeta()){
+			return;
+		}
+		switch(event.getCurrentItem().getType()){
+		case BOOK_AND_QUILL:
+			break;
+		case IRON_PICKAXE:
+			BuildingSpecs[] spec = building.getBuildingSpecs();
+			if(building.isUpgrading() == false && Resources.getElixir(player) >= spec[building.getLevel()].getUpgradePrice().getAmount()){
+			UpgradeBuilding upgrade = new UpgradeBuilding();
+			upgrade.startNewUpgrade(building);
+
+			event.getWhoClicked().closeInventory();}
+			break;
+		case EMERALD:
+			TimetoGemCalc calc = new TimetoGemCalc();
+			Resources.takeGems(player, calc.Calc(building.getUpgradeTimeRemain()*60));
+			UpgradeBuilding ub = new UpgradeBuilding();
+			ub.FinishUpgrade(building);
+			event.getWhoClicked().closeInventory();
+			break;
+		case STONE_SWORD:
+			TrainTroopsPanel panel = new TrainTroopsPanel(building);
+			this.dostaticbuildingremove  = false;
+			event.getWhoClicked().openInventory(panel.getInventory());
+			break;
+		default: player.closeInventory();
+			
+			}
+	}
+	private void TrainTroopsPanelClick(InventoryClickEvent event){
+		event.setCancelled(true);
+		if(staticbuilding.get(event.getWhoClicked().getName()) == null){return;}
+		if(event.getCurrentItem()==null || !event.getCurrentItem().hasItemMeta()){
+			return;}
+		Barracks building = (Barracks) staticbuilding.get(event.getWhoClicked().getName());
+		Player player = (Player) event.getWhoClicked();
+		switch(ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName())){
+		case "Barbarian":
+			Soldier soldier = Barbarian.spawnBarbarian(building.getLocation().add(3, 1, 0), player, 1);
+			ArmyCamp armycamp = ArmyCamp.getArmyCamp(1, player);
+			soldier.getNPC().lookAt(armycamp.getLocation());
+			soldier.addToArmyCamps();
+			break;
+		default:
+			player.closeInventory();
+			break;
+		}
+	}
 	@EventHandler
 	private void onInventoryClose(InventoryCloseEvent event){
+		if(dostaticbuildingremove == true){
 		staticbuilding.remove(event.getPlayer().getUniqueId());
+		}else{
+			this.dostaticbuildingremove = true;
+		}
 	}
 	@EventHandler
 	private void onBuildingInteract(BuildingInteractEvent event){

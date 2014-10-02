@@ -157,4 +157,5 @@ public interface NPC {
 	 */
 	public void setEntityCollision(boolean entityCollision);
 	
+	
 }

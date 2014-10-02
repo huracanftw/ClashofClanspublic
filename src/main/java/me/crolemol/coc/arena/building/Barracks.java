@@ -6,11 +6,12 @@ import java.sql.SQLException;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+
 import me.crolemol.coc.Coc;
 import me.crolemol.coc.arena.building.interfaces.Building;
 import me.crolemol.coc.arena.building.interfaces.BuildingPanel;
 import me.crolemol.coc.arena.building.interfaces.BuildingSpecs;
-import me.crolemol.coc.arena.panels.buildingpanels.BuildersHutPanel;
+import me.crolemol.coc.arena.panels.buildingpanels.BarracksPanel;
 import me.crolemol.coc.economy.Elixir;
 import me.crolemol.coc.economy.Resource;
 
@@ -111,7 +112,7 @@ public class Barracks extends Building{
 		}
 		}
 	@Override
-	public BuildingSpecs[] getBuildingSpecs() {
+	public BarracksSpecs[] getBuildingSpecs() {
 		return BarracksSpecs.values();
 	}
 
@@ -119,7 +120,7 @@ public class Barracks extends Building{
 
 	@Override
 	public BuildingPanel getBuildingPanel() {
-		BuildersHutPanel bhp = new BuildersHutPanel(BuildersHut.getBuildersHut(1, getOwner()));
+		BarracksPanel bhp = new BarracksPanel(this);
 		return bhp;
 	}
 	

@@ -136,4 +136,7 @@ public class NPCFactory implements Listener {
 			despawnAll();
 		}
 	}
+	public NPCNetworkManager getNPCNetworkManager(){
+		return this.networkManager;
+	}
 }

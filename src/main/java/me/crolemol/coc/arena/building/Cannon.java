@@ -1,5 +1,6 @@
 package me.crolemol.coc.arena.building;
 
+<<<<<<< HEAD
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -8,6 +9,11 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 
 import me.crolemol.coc.Coc;
+=======
+import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
+
+>>>>>>> FETCH_HEAD
 import me.crolemol.coc.arena.building.interfaces.Building;
 import me.crolemol.coc.arena.building.interfaces.BuildingPanel;
 import me.crolemol.coc.arena.building.interfaces.BuildingSpecs;
@@ -24,6 +30,7 @@ public class Cannon extends Building{
 	public Cannon(int Level){
 		super(Level);
 	}
+<<<<<<< HEAD
 	
 	public static Cannon getCannon(int BuildingID, OfflinePlayer owner) {
 		if (BuildingID == 0) {
@@ -55,6 +62,8 @@ public class Cannon extends Building{
 		return new Cannon(owner, new Location(world, x, y, z), level,
 				BuildingID, true);
 	}
+=======
+>>>>>>> FETCH_HEAD
 
 	@Override
 	public String getBuildingName() {

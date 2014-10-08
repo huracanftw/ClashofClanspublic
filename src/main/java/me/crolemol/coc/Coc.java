@@ -55,16 +55,11 @@ public class Coc extends JavaPlugin {
 			e.printStackTrace();
 		}
 		this.getCommand("coc").setExecutor(new CocCommandExecutor());
-		this.getServer().getPluginManager()
-				.registerEvents(new Eventlistener(), this);
-		this.getServer().getPluginManager()
-				.registerEvents(new BuildingShop(), this);
-		this.getServer().getPluginManager()
-				.registerEvents(new RelativeBuilding(null), this);
-		this.getServer().getPluginManager()
-				.registerEvents(new InteractStick(), this);
-		this.getServer().getPluginManager()
-				.registerEvents(new PanelClick(), this);
+		this.getServer().getPluginManager().registerEvents(new Eventlistener(), this);
+		this.getServer().getPluginManager().registerEvents(new BuildingShop(), this);
+		this.getServer().getPluginManager().registerEvents(new RelativeBuilding(null), this);
+		this.getServer().getPluginManager().registerEvents(new InteractStick(), this);
+		this.getServer().getPluginManager().registerEvents(new PanelClick(), this);
 		try {
 			this.preparedatabase();
 		} catch (SQLException e) {
@@ -95,11 +90,8 @@ public class Coc extends JavaPlugin {
 	}
 
 	private void saveresources() {
-		File ground = new File(this.getDataFolder()
-				+ "schematics/ground.schematic");
-		if (!ground.exists()) {
-			this.saveResource("schematics/ground.schematic", false);
-		}
+		this.saveResource("schematics/ground.schematic", false);
+		this.saveResource("schematics/balloon/balloon.schematic", false);
 		for (BuildingType building : BuildingType.values()) {
 			for (int level = 1; level <= building.getMaxLevel(); level++) {
 				File buildingfile = new File(this.getDataFolder()
@@ -141,9 +133,9 @@ public class Coc extends JavaPlugin {
 		db.query("CREATE TABLE IF NOT EXISTS `Bases`('BaseID' INTEGER,"
 				+ "'owner' TEXT NOT NULL,'spawnlocation_x' int NOT NULL,"
 				+ "'spawnlocation_y' int NOT NULL,'spawnlocation_z' int NOT NULL,PRIMARY KEY (BaseID))").close();;
-		db.query("CREATE TABLE IF NOT EXISTS `Resources`("
+		db.query("CREATE TABLE IF NOT EXISTS `PlayerData`("
 				+ "'owner' TEXT NOT NULL,'Gold' int NOT NULL,"
-				+ "'Elixir' int NOT NULL,'DarkElixir' int NOT NULL,'Gems' int NOT NULL)").close();
+				+ "'Elixir' int NOT NULL,'DarkElixir' int NOT NULL,'Gems' int NOT NULL,'Trophies' int NOT NULL)").close();
 		db.query("CREATE TABLE IF NOT EXISTS `Buildings`("
 				+ "'owner' TEXT NOT NULL,'BuildingName' varchar(20) NOT NULL,'Location_x' int NOT NULL,"
 				+ "'Location_y' int NOT NULL,'Location_z' int NOT NULL,'Level' int(2),'BuildingID' int(2),'Upgrade' int ,'LastCollect' int)").close();

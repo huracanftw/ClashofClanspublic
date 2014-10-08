@@ -8,8 +8,8 @@ import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 
 import me.crolemol.coc.Coc;
+import me.crolemol.coc.economy.PlayerData;
 import me.crolemol.coc.economy.Resource;
-import me.crolemol.coc.economy.Resources;
 
 
 
@@ -66,7 +66,7 @@ public abstract class ResourceBuilding extends Building {
 		if (super.isRealBuilding() == false) {
 			return;
 		}
-		Resources.Give(getCollectable(), super.getOwner());
+		PlayerData.Give(getCollectable(), super.getOwner());
 		setCollectable(0);
 	}
 

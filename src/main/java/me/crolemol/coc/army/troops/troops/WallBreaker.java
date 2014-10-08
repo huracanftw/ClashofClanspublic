@@ -10,7 +10,7 @@ import me.crolemol.npc.NPCEntity;
 
 public class WallBreaker extends Soldier{
 
-	public WallBreaker(NPCEntity entity, Player owner, int Level) {
+	private WallBreaker(NPCEntity entity, Player owner, int Level) {
 		super(entity, owner, Level);
 	}
 

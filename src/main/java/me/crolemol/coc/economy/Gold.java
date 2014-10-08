@@ -16,4 +16,9 @@ public class Gold implements Resource{
 		this.Amount = Amount;
 	}
 
+	@Override
+	public ResourceType getResourceType() {
+		return ResourceType.Gold;
+	}
+
 }

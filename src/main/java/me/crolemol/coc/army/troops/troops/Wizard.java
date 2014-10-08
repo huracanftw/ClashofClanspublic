@@ -10,7 +10,7 @@ import me.crolemol.npc.NPCEntity;
 
 public class Wizard extends Soldier{
 
-	public Wizard(NPCEntity entity, Player owner, int Level) {
+	private Wizard(NPCEntity entity, Player owner, int Level) {
 		super(entity, owner, Level);
 	}
 

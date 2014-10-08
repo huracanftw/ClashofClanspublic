@@ -12,7 +12,7 @@ import me.crolemol.coc.arena.building.interfaces.ResourceBuilding;
 import me.crolemol.coc.economy.DarkElixir;
 import me.crolemol.coc.economy.Elixir;
 import me.crolemol.coc.economy.Gold;
-import me.crolemol.coc.economy.Resources;
+import me.crolemol.coc.economy.PlayerData;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -25,15 +25,15 @@ public class UpgradeBuilding {
 		final int BuildingID = building.getBuildingID();
 		
 		if(spec[building.getLevel()].getUpgradePrice() instanceof Gold){
-		if(	Resources.getGold(building.getOwner()) < spec[building.getLevel()].getUpgradePrice().getAmount()){
+		if(	PlayerData.getGold(building.getOwner()) < spec[building.getLevel()].getUpgradePrice().getAmount()){
 			return;
 		}
 		}else if(spec[building.getLevel()].getUpgradePrice() instanceof Elixir){
-			if(	Resources.getElixir(building.getOwner()) < spec[building.getLevel()].getUpgradePrice().getAmount()){
+			if(	PlayerData.getElixir(building.getOwner()) < spec[building.getLevel()].getUpgradePrice().getAmount()){
 				return;
 			}
 		}else if(spec[building.getLevel()].getUpgradePrice() instanceof DarkElixir){
-			if(	Resources.getElixir(building.getOwner()) < spec[building.getLevel()].getUpgradePrice().getAmount()){
+			if(	PlayerData.getElixir(building.getOwner()) < spec[building.getLevel()].getUpgradePrice().getAmount()){
 				return;
 			}
 		}
@@ -42,7 +42,7 @@ public class UpgradeBuilding {
 						+ building.getOwner().getUniqueId()
 						+ "' AND BuildingID = "+ BuildingID
 						+ " AND BuildingName = '"+building.getBuildingName()+"'");
-		Resources.Take(spec[building.getLevel()].getUpgradePrice(), building.getOwner());
+		PlayerData.Take(spec[building.getLevel()].getUpgradePrice(), building.getOwner());
 		try {
 			plugin.getDataBase().getConnection().commit();
 		} catch (SQLException e1) {

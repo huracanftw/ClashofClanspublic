@@ -54,7 +54,7 @@ public class GoldminePanel implements BuildingPanel{
 		ItemMeta CollectMeta = Collect.getItemMeta();
 		CollectMeta.setDisplayName(ChatColor.LIGHT_PURPLE+"Collect");
 		List<String> list4 = new ArrayList<String>();
-		list4.add("Collectable gold: " + goldmine.getCollectable());
+		list4.add("Collectable gold: " + goldmine.getCollectable().getAmount());
 		CollectMeta.setLore(list4);
 		Collect.setItemMeta(CollectMeta);
 		

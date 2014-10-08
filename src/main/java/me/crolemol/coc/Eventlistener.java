@@ -65,7 +65,13 @@ public class Eventlistener implements Listener {
 			if(event.getEntity().getType() == null){
 				return;
 			}
-			if(!(event.getEntity().getType().equals(EntityType.VILLAGER))){
+			if(event.getEntity().getType().equals(EntityType.WITHER_SKULL)){
+				return;
+			}else if(event.getEntity().getType().equals(EntityType.HORSE)){
+				return;
+			}else if(event.getEntity().getType().equals(EntityType.FALLING_BLOCK)){
+				return;
+			}else{
 				event.setCancelled(true);
 			}
 		}

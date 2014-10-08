@@ -17,5 +17,10 @@ public class DarkElixir implements Resource{
 		this.Amount = Amount;
 	}
 
+	@Override
+	public ResourceType getResourceType() {
+		return ResourceType.DarkElixir;
+	}
+
 
 }

@@ -1,7 +1,5 @@
 package me.crolemol.coc.arena.panels.buildingpanels;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,10 +8,7 @@ import me.crolemol.coc.Coc;
 import me.crolemol.coc.arena.building.ArmyCamp;
 import me.crolemol.coc.arena.building.Barracks;
 import me.crolemol.coc.arena.building.DarkElixirDrill;
-import me.crolemol.coc.arena.building.DarkElixirStorage;
 import me.crolemol.coc.arena.building.ElixirCollector;
-import me.crolemol.coc.arena.building.ElixirStorage;
-import me.crolemol.coc.arena.building.GoldStorage;
 import me.crolemol.coc.arena.building.Goldmine;
 import me.crolemol.coc.arena.building.Townhall;
 import me.crolemol.coc.arena.building.UpgradeBuilding;
@@ -22,9 +17,10 @@ import me.crolemol.coc.arena.building.interfaces.BuildingSpecs;
 import me.crolemol.coc.arena.events.BuildingInteractEvent;
 import me.crolemol.coc.army.troops.Soldier;
 import me.crolemol.coc.army.troops.troops.Barbarian;
-import me.crolemol.coc.economy.Resources;
+import me.crolemol.coc.economy.PlayerData;
 import me.crolemol.coc.utils.PanelUtils;
 import me.crolemol.coc.utils.TimetoGemCalc;
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -38,84 +34,29 @@ public class PanelClick implements Listener{
 	private boolean dostaticbuildingremove = true;
 	@EventHandler
 	private void onInventoryClick(InventoryClickEvent event){
-		if(event.getInventory().getName().equals("Townhall")){
-			TownhallClickEvent(event);
-		}else if(event.getInventory().getName().equals("Goldmine")){
+		if(event.getInventory().getName().equals("Goldmine")){
 			GoldminePanelClick(event);
-		}else if(event.getInventory().getName().equals("Builder's hut")){
-			BuildersHutPanelClick(event);
-		}else if(event.getInventory().getName().equals("Goldstorage")){
-			GoldStoragePanelClick(event);
 		}else if(event.getInventory().getName().equals("Elixir Collector")){
 			ElixirCollectorPanelClick(event);
-		}else if(event.getInventory().getName().equals("Elixir Storage")){
-			ElixirStoragePanelClick(event);
-		}else if(event.getInventory().getName().equals("Dark Elixir Storage")){
-			DarkElixirStoragePanelClick(event);
 		}else if(event.getInventory().getName().equals("Dark Elixir Drill")){
 			DarkElixirDrillPanelClick(event);
-		}else if(event.getInventory().getName().equals("Army Camp")){
-			ArmyCampPanelClick(event);
 		}else if(event.getInventory().getName().equals("Barracks")){
 			BarracksPanelClick(event);
 		}else if(event.getInventory().getName().equals("Train Troops")){
 			TrainTroopsPanelClick(event);
+		}else{
+			Player player = (Player) event.getWhoClicked();
+			if(staticbuilding.get(player.getUniqueId().toString()) == null){return;}
+			normalBuildingPanelClick(event);
 		}
 			
 		
 	}
-	private void TownhallClickEvent(InventoryClickEvent event){
-		if(staticbuilding.get(event.getWhoClicked().getName()) == null){return;}
-		Player player = (Player) event.getWhoClicked();
-		Townhall building = (Townhall) staticbuilding.get(event.getWhoClicked().getName());
-		event.setCancelled(true);
-		if(event.getCurrentItem()==null || !event.getCurrentItem().hasItemMeta()){
-			return;
-		}
-		Townhall townhall = Townhall.getTownhall(player);
-		switch(event.getCurrentItem().getType()){
-		case BOOK_AND_QUILL:
-			break;
-		case IRON_PICKAXE:
-			BuildingSpecs[] spec = building.getBuildingSpecs();
-			if(townhall.isUpgrading() == false && Resources.getGold(player) >= spec[building.getLevel()].getUpgradePrice().getAmount()){
-			UpgradeBuilding upgrade = new UpgradeBuilding();
-			upgrade.startNewUpgrade(building);
-
-			event.getWhoClicked().closeInventory();}
-			break;
-		case EMERALD:
-			Calendar cal = Calendar.getInstance();
-			BuildingSpecs[] spec2 = building.getBuildingSpecs();
-			Long caltime = cal.getTimeInMillis()/60/1000;
-			ResultSet result = Coc.getPlugin().getDataBase().query("SELECT Upgrade FROM Buildings WHERE owner = '"
-					+ building.getOwner().getUniqueId()
-					+ "' AND BuildingID = "+ building.getBuildingID()
-					+ " AND BuildingName = '"+building.getBuildingName()+"'");
-			Long cal2 = (long) 0;
-			try {
-				cal2 = result.getLong("Upgrade");
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			Long time1 = PanelUtils.timeBetweenDates(cal2, caltime);
-			int time2 = spec2[building.getLevel()].getUpgradeTime();
-			Long time3 = time2 - time1;
-			TimetoGemCalc calc = new TimetoGemCalc();
-			Resources.takeGems((Player)event.getWhoClicked(), calc.Calc(time3*60));
-			UpgradeBuilding ub = new UpgradeBuilding();
-			ub.FinishUpgrade(building);
-			event.getWhoClicked().closeInventory();
-			break;
-		default: player.closeInventory();
-			
-			}
-		}
 	
 	private void GoldminePanelClick(InventoryClickEvent event){
-		if(staticbuilding.get(event.getWhoClicked().getName()) == null){return;}
 		Player player = (Player) event.getWhoClicked();
-		Goldmine building = (Goldmine) staticbuilding.get(event.getWhoClicked().getName());
+		if(staticbuilding.get(player.getUniqueId().toString()) == null){return;}
+		Goldmine building = (Goldmine) staticbuilding.get(player.getUniqueId().toString());
 		Townhall townhall = Townhall.getTownhall(player);
 		event.setCancelled(true);
 		if(event.getCurrentItem()==null || !event.getCurrentItem().hasItemMeta()){
@@ -130,7 +71,7 @@ public class PanelClick implements Listener{
 			break;
 		case IRON_PICKAXE:
 			BuildingSpecs[] spec = building.getBuildingSpecs();
-			if(building.isUpgrading() == false && Resources.getElixir(player) >= spec[building.getLevel()].getUpgradePrice().getAmount()){
+			if(building.isUpgrading() == false && PlayerData.getElixir(player) >= spec[building.getLevel()].getUpgradePrice().getAmount()){
 			if(townhall.getLevel() >= spec[building.getLevel()].getMinTownhallLevel()){
 			UpgradeBuilding upgrade = new UpgradeBuilding();
 			upgrade.startNewUpgrade(building);
@@ -145,92 +86,14 @@ public class PanelClick implements Listener{
 			Calendar cal = Calendar.getInstance();
 			BuildingSpecs[] spec2 = building.getBuildingSpecs();
 			Long caltime = cal.getTimeInMillis()/60/1000;
-			ResultSet result = Coc.getPlugin().getDataBase().query("SELECT Upgrade FROM Buildings WHERE owner = '"
-					+ building.getOwner().getUniqueId()
-					+ "' AND BuildingID = "+ building.getBuildingID()
-					+ " AND BuildingName = '"+building.getBuildingName()+"'");
-			Long cal2 = (long) 0;
-			try {
-				cal2 = result.getLong("Upgrade");
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			Long cal2 = building.getUpgradeTimeRemain();
 			Long time1 = PanelUtils.timeBetweenDates(cal2, caltime);
 			int time2 = spec2[building.getLevel()].getUpgradeTime();
 			Long time3 = time2 - time1;
 			TimetoGemCalc calc = new TimetoGemCalc();
-			Resources.takeGems((Player)event.getWhoClicked(), calc.Calc(time3*60));
+			PlayerData.takeGems((Player)event.getWhoClicked(), calc.Calc(time3*60));
 			ub.FinishUpgrade(building);
 			event.getWhoClicked().closeInventory();
-			break;
-		default: player.closeInventory();
-			
-		}
-		
-	}
-	
-	private void GoldStoragePanelClick(InventoryClickEvent event){
-		if(staticbuilding.get(event.getWhoClicked().getName()) == null){return;}
-		Player player = (Player) event.getWhoClicked();
-		GoldStorage building = (GoldStorage) staticbuilding.get(event.getWhoClicked().getName());
-		event.setCancelled(true);
-		Townhall townhall = Townhall.getTownhall(player);
-		if(event.getCurrentItem()==null || !event.getCurrentItem().hasItemMeta()){
-			return;
-		}
-		switch(event.getCurrentItem().getType()){
-		case BOOK_AND_QUILL:
-			break;
-		case IRON_PICKAXE:
-			BuildingSpecs[] spec = building.getBuildingSpecs();
-			if(building.isUpgrading() && Resources.getElixir(player) >= spec[building.getLevel()].getUpgradePrice().getAmount()){
-			if(townhall.getLevel() >= spec[building.getLevel()].getMinTownhallLevel()){
-			UpgradeBuilding upgrade = new UpgradeBuilding();
-			upgrade.startNewUpgrade(building);
-			event.getWhoClicked().closeInventory();
-				}else{
-					player.sendMessage(ChatColor.RED+"[ClashofClans] You need to upgrade your townhall to upgrade this building!");
-				}
-			}
-			break;
-		case EMERALD:
-			UpgradeBuilding ub = new UpgradeBuilding();
-			Calendar cal = Calendar.getInstance();
-			BuildingSpecs[] spec2 = building.getBuildingSpecs();
-			Long caltime = cal.getTimeInMillis()/60/1000;
-			ResultSet result = Coc.getPlugin().getDataBase().query("SELECT Upgrade FROM Buildings WHERE owner = '"
-					+ building.getOwner().getUniqueId()
-					+ "' AND BuildingID = "+ building.getBuildingID()
-					+ " AND BuildingName = '"+building.getBuildingName()+"'");
-			Long cal2 = (long) 0;
-			try {
-				cal2 = result.getLong("Upgrade");
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			Long time1 = PanelUtils.timeBetweenDates(cal2, caltime);
-			int time2 = spec2[building.getLevel()].getUpgradeTime();
-			Long time3 = time2 - time1;
-			TimetoGemCalc calc = new TimetoGemCalc();
-			Resources.takeGems((Player)event.getWhoClicked(), calc.Calc(time3*60));
-			ub.FinishUpgrade(building);
-			event.getWhoClicked().closeInventory();
-			break;
-		default: player.closeInventory();
-		}
-		
-	}
-	
-	@EventHandler
-	private void BuildersHutPanelClick(InventoryClickEvent event){
-		if(staticbuilding.get(event.getWhoClicked().getName()) == null){return;}
-		Player player = (Player) event.getWhoClicked();
-		event.setCancelled(true);
-		if(event.getCurrentItem()==null || !event.getCurrentItem().hasItemMeta()){
-			return;
-		}
-		switch(event.getCurrentItem().getType()){
-		case BOOK_AND_QUILL:
 			break;
 		default: player.closeInventory();
 			
@@ -239,9 +102,9 @@ public class PanelClick implements Listener{
 	}
 	
 	private void ElixirCollectorPanelClick(InventoryClickEvent event){
-		if(staticbuilding.get(event.getWhoClicked().getName()) == null){return;}
 		Player player = (Player) event.getWhoClicked();
-		ElixirCollector building = (ElixirCollector) staticbuilding.get(event.getWhoClicked().getName());
+		if(staticbuilding.get(player.getUniqueId().toString()) == null){return;}		
+		ElixirCollector building = (ElixirCollector) staticbuilding.get(player.getUniqueId().toString());
 		event.setCancelled(true);
 		if(event.getCurrentItem()==null || !event.getCurrentItem().hasItemMeta()){
 			return;
@@ -255,7 +118,7 @@ public class PanelClick implements Listener{
 			break;
 		case IRON_PICKAXE:
 			BuildingSpecs[] spec = building.getBuildingSpecs();
-			if(building.isUpgrading() == false && Resources.getGold(player) >= spec[building.getLevel()].getUpgradePrice().getAmount()){
+			if(building.isUpgrading() == false && PlayerData.getGold(player) >= spec[building.getLevel()].getUpgradePrice().getAmount()){
 			if(Townhall.getTownhall(player).getLevel() >= spec[building.getLevel()].getMinTownhallLevel()){
 			UpgradeBuilding upgrade = new UpgradeBuilding();
 			upgrade.startNewUpgrade(building);
@@ -270,21 +133,12 @@ public class PanelClick implements Listener{
 			Calendar cal = Calendar.getInstance();
 			BuildingSpecs[] spec2 = building.getBuildingSpecs();
 			Long caltime = cal.getTimeInMillis()/60/1000;
-			ResultSet result = Coc.getPlugin().getDataBase().query("SELECT Upgrade FROM Buildings WHERE owner = '"
-					+ building.getOwner().getUniqueId()
-					+ "' AND BuildingID = "+ building.getBuildingID()
-					+ " AND BuildingName = '"+building.getBuildingName()+"'");
-			Long cal2 = (long) 0;
-			try {
-				cal2 = result.getLong("Upgrade");
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			Long cal2 = building.getUpgradeTimeRemain();
 			Long time1 = PanelUtils.timeBetweenDates(cal2, caltime);
 			int time2 = spec2[building.getLevel()].getUpgradeTime();
 			Long time3 = time2 - time1;
 			TimetoGemCalc calc = new TimetoGemCalc();
-			Resources.takeGems((Player)event.getWhoClicked(), calc.Calc(time3*60));
+			PlayerData.takeGems((Player)event.getWhoClicked(), calc.Calc(time3*60));
 			ub.FinishUpgrade(building);
 			event.getWhoClicked().closeInventory();
 			break;
@@ -295,110 +149,10 @@ public class PanelClick implements Listener{
 		
 	}
 	
-	private void DarkElixirStoragePanelClick(InventoryClickEvent event){
-		if(staticbuilding.get(event.getWhoClicked().getName()) == null){return;}
-		Player player = (Player) event.getWhoClicked();
-		DarkElixirStorage building = (DarkElixirStorage) staticbuilding.get(event.getWhoClicked().getName());
-		event.setCancelled(true);
-		if(event.getCurrentItem()==null || !event.getCurrentItem().hasItemMeta()){
-			return;
-		}
-		switch(event.getCurrentItem().getType()){
-		case BOOK_AND_QUILL:
-			break;
-		case IRON_PICKAXE:
-			BuildingSpecs[] spec = building.getBuildingSpecs();
-			if(building.isUpgrading() == false && Resources.getElixir(player) >= spec[building.getLevel()].getUpgradePrice().getAmount()){
-			if(Townhall.getTownhall(player).getLevel() >= spec[building.getLevel()].getMinTownhallLevel()){
-			UpgradeBuilding upgrade = new UpgradeBuilding();
-			upgrade.startNewUpgrade(building);
-			event.getWhoClicked().closeInventory();
-				}else{
-					player.sendMessage(ChatColor.RED+"[ClashofClans] You need to upgrade your townhall to upgrade this building!");
-				}
-			}
-			break;
-		case EMERALD:
-			UpgradeBuilding ub = new UpgradeBuilding();
-			Calendar cal = Calendar.getInstance();
-			BuildingSpecs[] spec2 = building.getBuildingSpecs();
-			Long caltime = cal.getTimeInMillis()/60/1000;
-			ResultSet result = Coc.getPlugin().getDataBase().query("SELECT Upgrade FROM Buildings WHERE owner = '"
-					+ building.getOwner().getUniqueId()
-					+ "' AND BuildingID = "+ building.getBuildingID()
-					+ " AND BuildingName = '"+building.getBuildingName()+"'");
-			Long cal2 = (long) 0;
-			try {
-				cal2 = result.getLong("Upgrade");
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}			Long time1 = PanelUtils.timeBetweenDates(cal2, caltime);
-			int time2 = spec2[building.getLevel()].getUpgradeTime();
-			Long time3 = time2 - time1;
-			TimetoGemCalc calc = new TimetoGemCalc();
-			Resources.takeGems((Player)event.getWhoClicked(), calc.Calc(time3*60));
-			ub.FinishUpgrade(building);
-			event.getWhoClicked().closeInventory();
-			break;
-		default: player.closeInventory();
-		}
-		
-	}
-	private void ElixirStoragePanelClick(InventoryClickEvent event){
-		if(staticbuilding.get(event.getWhoClicked().getName()) == null){return;}
-		Player player = (Player) event.getWhoClicked();
-		ElixirStorage building = (ElixirStorage) staticbuilding.get(event.getWhoClicked().getName());
-		event.setCancelled(true);
-		if(event.getCurrentItem()==null || !event.getCurrentItem().hasItemMeta()){
-			return;
-		}
-		switch(event.getCurrentItem().getType()){
-		case BOOK_AND_QUILL:
-			break;
-		case IRON_PICKAXE:
-			BuildingSpecs[] spec = building.getBuildingSpecs();
-			if(building.isUpgrading() == false && Resources.getGold(player) >= spec[building.getLevel()].getUpgradePrice().getAmount()){
-			if(Townhall.getTownhall(player).getLevel() >= spec[building.getLevel()].getMinTownhallLevel()){
-			UpgradeBuilding upgrade = new UpgradeBuilding();
-			upgrade.startNewUpgrade(building);
-			event.getWhoClicked().closeInventory();
-				}else{
-					player.sendMessage(ChatColor.RED+"[ClashofClans] You need to upgrade your townhall to upgrade this building!");
-				}
-			}
-			break;
-		case EMERALD:
-			UpgradeBuilding ub = new UpgradeBuilding();
-			Calendar cal = Calendar.getInstance();
-			BuildingSpecs[] spec2 = building.getBuildingSpecs();
-			Long caltime = cal.getTimeInMillis()/60/1000;
-			ResultSet result = Coc.getPlugin().getDataBase().query("SELECT Upgrade FROM Buildings WHERE owner = '"
-					+ building.getOwner().getUniqueId()
-					+ "' AND BuildingID = "+ building.getBuildingID()
-					+ " AND BuildingName = '"+building.getBuildingName()+"'");
-			Long cal2 = (long) 0;
-			try {
-				cal2 = result.getLong("Upgrade");
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			Long time1 = PanelUtils.timeBetweenDates(cal2, caltime);
-			int time2 = spec2[building.getLevel()].getUpgradeTime();
-			Long time3 = time2 - time1;
-			TimetoGemCalc calc = new TimetoGemCalc();
-			Resources.takeGems((Player)event.getWhoClicked(), calc.Calc(time3*60));
-			ub.FinishUpgrade(building);
-			event.getWhoClicked().closeInventory();
-			break;
-		default: player.closeInventory();
-		}
-		
-	}
-	
 	private void DarkElixirDrillPanelClick(InventoryClickEvent event){
-		if(staticbuilding.get(event.getWhoClicked().getName()) == null){return;}
 		Player player = (Player) event.getWhoClicked();
-		DarkElixirDrill building = (DarkElixirDrill) staticbuilding.get(event.getWhoClicked().getName());
+		if(staticbuilding.get(player.getUniqueId().toString()) == null){return;}	
+		DarkElixirDrill building = (DarkElixirDrill) staticbuilding.get(player.getUniqueId().toString());
 		event.setCancelled(true);
 		if(event.getCurrentItem()==null || !event.getCurrentItem().hasItemMeta()){
 			return;
@@ -412,7 +166,7 @@ public class PanelClick implements Listener{
 			break;
 		case IRON_PICKAXE:
 			BuildingSpecs[] spec = building.getBuildingSpecs();
-			if(building.isUpgrading() == false && Resources.getElixir(player) >= spec[building.getLevel()].getUpgradePrice().getAmount()){
+			if(building.isUpgrading() == false && PlayerData.getElixir(player) >= spec[building.getLevel()].getUpgradePrice().getAmount()){
 			if(Townhall.getTownhall(player).getLevel() >= spec[building.getLevel()].getMinTownhallLevel()){
 			UpgradeBuilding upgrade = new UpgradeBuilding();
 			upgrade.startNewUpgrade(building);
@@ -427,21 +181,12 @@ public class PanelClick implements Listener{
 			Calendar cal = Calendar.getInstance();
 			BuildingSpecs[] spec2 = building.getBuildingSpecs();
 			Long caltime = cal.getTimeInMillis()/60/1000;
-			ResultSet result = Coc.getPlugin().getDataBase().query("SELECT Upgrade FROM Buildings WHERE owner = '"
-					+ building.getOwner().getUniqueId()
-					+ "' AND BuildingID = "+ building.getBuildingID()
-					+ " AND BuildingName = '"+building.getBuildingName()+"'");
-			Long cal2 = (long) 0;
-			try {
-				cal2 = result.getLong("Upgrade");
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			Long cal2 = building.getUpgradeTimeRemain();
 			Long time1 = PanelUtils.timeBetweenDates(cal2, caltime);
 			int time2 = spec2[building.getLevel()].getUpgradeTime();
 			Long time3 = time2 - time1;
 			TimetoGemCalc calc = new TimetoGemCalc();
-			Resources.takeGems((Player)event.getWhoClicked(), calc.Calc(time3*60));
+			PlayerData.takeGems((Player)event.getWhoClicked(), calc.Calc(time3*60));
 			ub.FinishUpgrade(building);
 			event.getWhoClicked().closeInventory();
 			break;
@@ -450,57 +195,10 @@ public class PanelClick implements Listener{
 		}		
 	}
 	
-	private void ArmyCampPanelClick(InventoryClickEvent event){		
-		if(staticbuilding.get(event.getWhoClicked().getName()) == null){return;}
-		Player player = (Player) event.getWhoClicked();
-		ArmyCamp building = (ArmyCamp) staticbuilding.get(event.getWhoClicked().getName());
-		event.setCancelled(true);
-		if(event.getCurrentItem()==null || !event.getCurrentItem().hasItemMeta()){
-			return;
-		}
-		switch(event.getCurrentItem().getType()){
-		case BOOK_AND_QUILL:
-			break;
-		case IRON_PICKAXE:
-			BuildingSpecs[] spec = building.getBuildingSpecs();
-			if(building.isUpgrading() == false && Resources.getElixir(player) >= spec[building.getLevel()].getUpgradePrice().getAmount()){
-			UpgradeBuilding upgrade = new UpgradeBuilding();
-			upgrade.startNewUpgrade(building);
-
-			event.getWhoClicked().closeInventory();}
-			break;
-		case EMERALD:
-			Calendar cal = Calendar.getInstance();
-			BuildingSpecs[] spec2 = building.getBuildingSpecs();
-			Long caltime = cal.getTimeInMillis()/60/1000;
-			ResultSet result = Coc.getPlugin().getDataBase().query("SELECT Upgrade FROM Buildings WHERE owner = '"
-					+ building.getOwner().getUniqueId()
-					+ "' AND BuildingID = "+ building.getBuildingID()
-					+ " AND BuildingName = '"+building.getBuildingName()+"'");
-			Long cal2 = (long) 0;
-			try {
-				cal2 = result.getLong("Upgrade");
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			Long time1 = PanelUtils.timeBetweenDates(cal2, caltime);
-			int time2 = spec2[building.getLevel()].getUpgradeTime();
-			Long time3 = time2 - time1;
-			TimetoGemCalc calc = new TimetoGemCalc();
-			Resources.takeGems(player, calc.Calc(time3*60));
-			UpgradeBuilding ub = new UpgradeBuilding();
-			ub.FinishUpgrade(building);
-			event.getWhoClicked().closeInventory();
-			break;
-		default: player.closeInventory();
-			
-			}
-		}
-	
 	private void BarracksPanelClick(InventoryClickEvent event){
-		if(staticbuilding.get(event.getWhoClicked().getName()) == null){return;}
 		Player player = (Player) event.getWhoClicked();
-		Barracks building = (Barracks) staticbuilding.get(event.getWhoClicked().getName());
+		if(staticbuilding.get(player.getUniqueId().toString()) == null){return;}	
+		Barracks building = (Barracks) staticbuilding.get(player.getUniqueId().toString());
 		event.setCancelled(true);
 		if(event.getCurrentItem()==null || !event.getCurrentItem().hasItemMeta()){
 			return;
@@ -510,7 +208,7 @@ public class PanelClick implements Listener{
 			break;
 		case IRON_PICKAXE:
 			BuildingSpecs[] spec = building.getBuildingSpecs();
-			if(building.isUpgrading() == false && Resources.getElixir(player) >= spec[building.getLevel()].getUpgradePrice().getAmount()){
+			if(building.isUpgrading() == false && PlayerData.getElixir(player) >= spec[building.getLevel()].getUpgradePrice().getAmount()){
 			UpgradeBuilding upgrade = new UpgradeBuilding();
 			upgrade.startNewUpgrade(building);
 
@@ -518,7 +216,7 @@ public class PanelClick implements Listener{
 			break;
 		case EMERALD:
 			TimetoGemCalc calc = new TimetoGemCalc();
-			Resources.takeGems(player, calc.Calc(building.getUpgradeTimeRemain()*60));
+			PlayerData.takeGems(player, calc.Calc(building.getUpgradeTimeRemain()*60));
 			UpgradeBuilding ub = new UpgradeBuilding();
 			ub.FinishUpgrade(building);
 			event.getWhoClicked().closeInventory();
@@ -534,11 +232,12 @@ public class PanelClick implements Listener{
 	}
 	private void TrainTroopsPanelClick(InventoryClickEvent event){
 		event.setCancelled(true);
-		if(staticbuilding.get(event.getWhoClicked().getName()) == null){return;}
+		Player player = (Player) event.getWhoClicked();
+		if(staticbuilding.get(player.getUniqueId().toString()) == null){return;}
 		if(event.getCurrentItem()==null || !event.getCurrentItem().hasItemMeta()){
 			return;}
-		Barracks building = (Barracks) staticbuilding.get(event.getWhoClicked().getName());
-		Player player = (Player) event.getWhoClicked();
+		Barracks building = (Barracks) staticbuilding.get(player.getUniqueId().toString());
+
 		switch(ChatColor.stripColor(event.getCurrentItem().getItemMeta().getDisplayName())){
 		case "Barbarian":
 			Soldier soldier = Barbarian.spawnBarbarian(building.getLocation().add(3, 1, 0), player, 1);
@@ -551,16 +250,57 @@ public class PanelClick implements Listener{
 			break;
 		}
 	}
+	
+	private void normalBuildingPanelClick(InventoryClickEvent event){
+		Player player = (Player) event.getWhoClicked();
+		Building building = staticbuilding.get(player.getUniqueId().toString());
+		event.setCancelled(true);
+		Townhall townhall = Townhall.getTownhall(player);
+		if(event.getCurrentItem()==null || !event.getCurrentItem().hasItemMeta()){
+			return;
+		}
+		switch(event.getCurrentItem().getType()){
+		case BOOK_AND_QUILL:
+			break;
+		case IRON_PICKAXE:
+			BuildingSpecs[] spec = building.getBuildingSpecs();
+			if(building.isUpgrading() == false && PlayerData.getResource(spec[building.getLevel()].getUpgradePrice().getResourceType(), player) >= spec[building.getLevel()].getUpgradePrice().getAmount()){
+				if(townhall.getLevel() >= spec[building.getLevel()].getMinTownhallLevel()){
+					UpgradeBuilding upgrade = new UpgradeBuilding();
+					upgrade.startNewUpgrade(building);
+					event.getWhoClicked().closeInventory();
+						}else{
+							player.sendMessage(ChatColor.RED+"[ClashofClans] You need to upgrade your Townhall to upgrade this building!");
+						}
+			event.getWhoClicked().closeInventory();}
+			break;
+		case EMERALD:
+			Calendar cal = Calendar.getInstance();
+			BuildingSpecs[] spec2 = building.getBuildingSpecs();
+			Long caltime = cal.getTimeInMillis()/60/1000;
+			Long cal2 = building.getUpgradeTimeRemain();
+			Long time1 = PanelUtils.timeBetweenDates(cal2, caltime);
+			int time2 = spec2[building.getLevel()].getUpgradeTime();
+			Long time3 = time2 - time1;
+			TimetoGemCalc calc = new TimetoGemCalc();
+			PlayerData.takeGems(player, calc.Calc(time3*60));
+			UpgradeBuilding ub = new UpgradeBuilding();
+			ub.FinishUpgrade(building);
+			event.getWhoClicked().closeInventory();
+			break;
+		default: player.closeInventory();
+	}
+		}
 	@EventHandler
 	private void onInventoryClose(InventoryCloseEvent event){
 		if(dostaticbuildingremove == true){
-		staticbuilding.remove(event.getPlayer().getUniqueId());
+		staticbuilding.remove(event.getPlayer().getUniqueId().toString());
 		}else{
 			this.dostaticbuildingremove = true;
 		}
 	}
 	@EventHandler
 	private void onBuildingInteract(BuildingInteractEvent event){
-		staticbuilding.put(event.getPlayer().getName(), event.getBuilding());
+		staticbuilding.put(event.getPlayer().getUniqueId().toString(), event.getBuilding());
 	}
 }

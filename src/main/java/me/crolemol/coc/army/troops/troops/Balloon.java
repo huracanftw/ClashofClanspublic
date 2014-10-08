@@ -1,5 +1,7 @@
 package me.crolemol.coc.army.troops.troops;
 
+import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import me.crolemol.coc.arena.building.interfaces.Building;
@@ -10,8 +12,11 @@ import me.crolemol.npc.NPCEntity;
 
 public class Balloon extends Soldier {
 
-	public Balloon(NPCEntity entity, Player owner, int Level) {
+	private Balloon(NPCEntity entity, Player owner, int Level) {
 		super(entity, owner, Level);
+	}
+	public static Balloon spawnBalloon(Location loc,int level,OfflinePlayer owner){
+		
 	}
 
 	@Override

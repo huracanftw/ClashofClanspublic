@@ -6,13 +6,14 @@ import java.sql.SQLException;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+
 import me.crolemol.coc.Coc;
 import me.crolemol.coc.arena.Base;
 import me.crolemol.coc.arena.building.interfaces.Building;
 import me.crolemol.coc.arena.building.interfaces.BuildingPanel;
 import me.crolemol.coc.arena.building.interfaces.BuildingSpecs;
 import me.crolemol.coc.arena.panels.buildingpanels.BuildersHutPanel;
-import me.crolemol.coc.economy.Gem;
+import me.crolemol.coc.economy.Gems;
 import me.crolemol.coc.economy.Resource;
 
 public class BuildersHut extends Building{
@@ -66,7 +67,7 @@ public class BuildersHut extends Building{
 		return "buildershut";
 	}
 	private enum Specs implements BuildingSpecs{
-		lv1(new Gem(50));
+		lv1(new Gems(50));
 		Resource cost;
 		Specs(Resource cost2){
 			cost = cost2;
@@ -103,7 +104,7 @@ public class BuildersHut extends Building{
 	}
 
 
-	public static Gem getNextGemCost(OfflinePlayer player){
+	public static Gems getNextGemCost(OfflinePlayer player){
 		int counter = 0;
 		Base base = Base.getBase(player);
 		switch(base.getAmountofBuilding("buildershut") +1){
@@ -114,7 +115,7 @@ public class BuildersHut extends Building{
 		case 5:counter = 2000;
 			
 		}
-		return new Gem(counter);
+		return new Gems(counter);
 	}
 
 	@Override

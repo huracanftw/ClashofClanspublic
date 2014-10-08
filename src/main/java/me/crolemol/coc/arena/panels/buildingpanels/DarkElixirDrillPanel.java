@@ -54,7 +54,7 @@ public class DarkElixirDrillPanel implements BuildingPanel{
 		Collect.addUnsafeEnchantment(myEnchantment, 1);
 		CollectMeta.setDisplayName(ChatColor.LIGHT_PURPLE+"Collect");
 		List<String> list4 = new ArrayList<String>();
-		list4.add("Collectable dark elixir: " + building.getCollectable());
+		list4.add("Collectable dark elixir: " + building.getCollectable().getAmount());
 		CollectMeta.setLore(list4);
 		Collect.setItemMeta(CollectMeta);
 		

@@ -1,6 +1,6 @@
 package me.crolemol.coc.scoreboard;
 
-import me.crolemol.coc.economy.Resources;
+import me.crolemol.coc.economy.PlayerData;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -21,15 +21,15 @@ public class ScoreboardApi {
 		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 		objective.setDisplayName(player.getName());
 		Score score = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.GOLD+"Gold"));
-		score.setScore(Resources.getGold(player));
+		score.setScore(PlayerData.getGold(player));
 		Score score2 = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.LIGHT_PURPLE+"Elixir"));
-		score2.setScore(Resources.getElixir(player));
-		if(Resources.getDarkElixir(player) != 0){
+		score2.setScore(PlayerData.getElixir(player));
+		if(PlayerData.getDarkElixir(player) != 0){
 		Score score3 = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.GRAY+"Dark Elixir"));
-		score3.setScore(Resources.getDarkElixir(player));
+		score3.setScore(PlayerData.getDarkElixir(player));
 		}
 		Score score4 = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.GREEN+"Gems"));
-		score4.setScore(Resources.getGems(player));
+		score4.setScore(PlayerData.getGems(player));
 		player.setScoreboard(board);
 	}
 	public static void removeCurrencyBoardt(Player player){

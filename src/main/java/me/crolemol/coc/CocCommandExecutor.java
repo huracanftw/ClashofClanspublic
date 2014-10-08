@@ -7,7 +7,6 @@ import java.sql.Statement;
 import me.crolemol.coc.arena.Base;
 import me.crolemol.coc.arena.InteractStick;
 import me.crolemol.coc.scoreboard.ScoreboardApi;
-import me.crolemol.coc.utils.FlyingBalloonBlock;
 
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -30,23 +29,27 @@ public class CocCommandExecutor implements CommandExecutor {
 						Base base = Base.getBase(player);
 						player.teleport(base.getArenaSpawn());
 						player.getInventory().clear();
+						
 						ItemStack book = new ItemStack(Material.BOOK);
 						ItemMeta bookMeta = book.getItemMeta();
 						bookMeta.setDisplayName("Shop");
 						book.setItemMeta(bookMeta);
 						player.getInventory().setItem(8, book);
+						ItemStack Attack = new ItemStack(Material.WOOD_SWORD);
+						ItemMeta AttackMeta = Attack.getItemMeta();
+						AttackMeta.setDisplayName("Attack");
+						Attack.setItemMeta(AttackMeta);
+						player.getInventory().setItem(7, Attack);
 						InteractStick.getInteractStick(player);
 						ScoreboardApi sb = new ScoreboardApi();
 						sb.setCurrencyBoard(player);
-						FlyingBalloonBlock block = new FlyingBalloonBlock(Material.GOLD_BLOCK,(byte) 0);
-						block.spawn(player.getLocation());
 						return true;
 					} else {
 						Base.newBase(player);
 						return true;
 					}
 
-				} else if (args[0].equals("building") && args.length == 1) {
+				} else if (args.length == 1 && args[0].equals("building")) {
 					((Player) sender).getInventory().clear();
 					ItemStack offset = new ItemStack(Material.STICK);
 					ItemMeta offsetmeta = offset.getItemMeta();

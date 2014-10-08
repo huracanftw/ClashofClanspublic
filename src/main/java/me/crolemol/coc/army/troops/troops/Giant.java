@@ -10,7 +10,7 @@ import me.crolemol.npc.NPCEntity;
 
 public class Giant extends Soldier{
 
-	public Giant(NPCEntity entity, Player owner, int Level) {
+	private Giant(NPCEntity entity, Player owner, int Level) {
 		super(entity, owner, Level);
 	}
 

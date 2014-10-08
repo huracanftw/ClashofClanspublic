@@ -1,11 +1,17 @@
 package me.crolemol.coc.arena.building;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 
+import me.crolemol.coc.Coc;
 import me.crolemol.coc.arena.building.interfaces.Building;
 import me.crolemol.coc.arena.building.interfaces.BuildingPanel;
 import me.crolemol.coc.arena.building.interfaces.BuildingSpecs;
+import me.crolemol.coc.arena.panels.buildingpanels.SpellFactoryPanel;
 import me.crolemol.coc.economy.Elixir;
 import me.crolemol.coc.economy.Resource;
 
@@ -22,6 +28,38 @@ public class SpellFactory extends Building{
 	public String getBuildingName() {
 		return "spellfactory";
 	}
+	
+	public static SpellFactory getSpellFactory(int BuildingID,
+			OfflinePlayer owner) {
+		if(BuildingID == 0){
+			throw new IllegalArgumentException("BuildingID cannot be 0");
+		}
+		if(owner == null){
+			throw new IllegalArgumentException("owner cannot be null");
+		}
+		World world = Coc.getPlugin().getServer().getWorld("coc");
+		ResultSet result = Coc.getPlugin()
+				.getDataBase().query("SELECT * FROM Buildings WHERE owner = '"
+						+ owner.getUniqueId()
+						+ "' AND BuildingID = "+ BuildingID
+						+ " AND BuildingName = 'spellfactory'");
+		int x = 0;
+		int y = 0;
+		int z = 0;
+		int level = 0;
+		try {
+			x = result.getInt("Location_x");
+			y = result.getInt("Location_y");
+			z = result.getInt("Location_z");
+			level = result.getInt("Level");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		if(y == 0){
+			return null;
+		}
+		return new SpellFactory(owner,new Location(world,x,y,z),level,BuildingID,true);	}
+	
 	public enum SpellFactorySpecs implements BuildingSpecs{
 		lv1(200,1,new Elixir(200000),1440,293,5),
 		lv2(300,2,new Elixir(400000),2880,415,6),
@@ -80,8 +118,7 @@ public class SpellFactory extends Building{
 	}
 	@Override
 	public BuildingPanel getBuildingPanel() {
-		// TODO Auto-generated method stub
-		return null;
+		return new SpellFactoryPanel(this);
 	}
 
 }

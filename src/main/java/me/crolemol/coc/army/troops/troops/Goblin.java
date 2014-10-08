@@ -9,7 +9,7 @@ import me.crolemol.npc.NPCEntity;
 
 public class Goblin extends Soldier{
 
-	public Goblin(NPCEntity entity, Player owner, int Level) {
+	private Goblin(NPCEntity entity, Player owner, int Level) {
 		super(entity, owner, Level);
 	}
 

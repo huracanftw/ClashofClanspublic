@@ -10,18 +10,26 @@ import java.util.List;
 import java.util.UUID;
 
 import me.crolemol.coc.Coc;
+import me.crolemol.coc.arena.building.AirDefense;
 import me.crolemol.coc.arena.building.ArcherQueenAltar;
+import me.crolemol.coc.arena.building.ArcherTower;
 import me.crolemol.coc.arena.building.ArmyCamp;
 import me.crolemol.coc.arena.building.BarbarianKingAltar;
 import me.crolemol.coc.arena.building.Barracks;
 import me.crolemol.coc.arena.building.BuildersHut;
+import me.crolemol.coc.arena.building.Cannon;
 import me.crolemol.coc.arena.building.DarkElixirDrill;
 import me.crolemol.coc.arena.building.DarkElixirStorage;
 import me.crolemol.coc.arena.building.ElixirCollector;
 import me.crolemol.coc.arena.building.ElixirStorage;
 import me.crolemol.coc.arena.building.GoldStorage;
 import me.crolemol.coc.arena.building.Goldmine;
+import me.crolemol.coc.arena.building.HiddenTesla;
+import me.crolemol.coc.arena.building.Laboratory;
+import me.crolemol.coc.arena.building.Mortar;
+import me.crolemol.coc.arena.building.SpellFactory;
 import me.crolemol.coc.arena.building.Townhall;
+import me.crolemol.coc.arena.building.WizardTower;
 import me.crolemol.coc.arena.building.interfaces.Building;
 import me.crolemol.coc.arena.building.interfaces.ResourceBuilding;
 
@@ -118,6 +126,22 @@ public class Base {
 			return Barracks.getBarracks(BuildingID, owner);
 		case "archerqueenaltar":
 			return ArcherQueenAltar.getArcherQueenAltar(BuildingID, owner);
+		case "spellfactory":
+			return SpellFactory.getSpellFactory(BuildingID, owner);
+		case "laboratory":
+			return Laboratory.getLaboratory(BuildingID, owner);
+		case "cannon":
+			return Cannon.getCannon(BuildingID, owner);
+		case "archertower":
+			return ArcherTower.getArcherTower(BuildingID, owner);
+		case "mortar":
+			return Mortar.getMortar(BuildingID, owner);
+		case "wizardtower":
+			return WizardTower.getWizardTower(BuildingID, owner);
+		case "airdefense":
+			return AirDefense.getAirDefense(BuildingID, owner);
+		case "hiddentesla":
+			return HiddenTesla.getHiddenTesla(BuildingID, owner);
 		}
 		
 		return null;
@@ -348,8 +372,8 @@ public class Base {
 
 			try {
 				Coc.getPlugin().getDataBase()
-						.query("INSERT INTO 'Resources' ('owner','Gold','Elixir','DarkElixir','Gems') VALUES ('"
-								+ owner.getUniqueId().toString() + "',1000,1000,0,500);").close();
+						.query("INSERT INTO 'PlayerData' ('owner','Gold','Elixir','DarkElixir','Gems','Trophies') VALUES ('"
+								+ owner.getUniqueId().toString() + "',1000,1000,0,500,0);").close();
 						plugin.getDataBase().getConnection().commit();
 			} catch (SQLException e2) {
 				e2.printStackTrace();

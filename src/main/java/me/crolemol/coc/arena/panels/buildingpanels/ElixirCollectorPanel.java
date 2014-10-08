@@ -56,7 +56,7 @@ public class ElixirCollectorPanel implements BuildingPanel{
 		Collect.addUnsafeEnchantment(myEnchantment, 1);
 		CollectMeta.setDisplayName(ChatColor.LIGHT_PURPLE+"Collect");
 		List<String> list4 = new ArrayList<String>();
-		list4.add("Collectable elixir: " + building.getCollectable());
+		list4.add("Collectable elixir: " + building.getCollectable().getAmount());
 		CollectMeta.setLore(list4);
 		Collect.setItemMeta(CollectMeta);
 		

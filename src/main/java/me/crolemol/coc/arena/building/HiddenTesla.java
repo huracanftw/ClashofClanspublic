@@ -4,9 +4,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import me.crolemol.coc.Coc;
-import me.crolemol.coc.arena.building.interfaces.Building;
 import me.crolemol.coc.arena.building.interfaces.BuildingPanel;
 import me.crolemol.coc.arena.building.interfaces.BuildingSpecs;
+import me.crolemol.coc.arena.building.interfaces.DefensiveBuilding;
+import me.crolemol.coc.arena.building.interfaces.DefensiveBuildingSpecs;
 import me.crolemol.coc.arena.panels.buildingpanels.HiddenTeslaPanel;
 import me.crolemol.coc.economy.Gold;
 import me.crolemol.coc.economy.Resource;
@@ -15,7 +16,7 @@ import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 
-public class HiddenTesla extends Building{
+public class HiddenTesla extends DefensiveBuilding{
 
 	protected HiddenTesla(OfflinePlayer owner, Location loc, int level,
 			int BuildingID, boolean isreal) {
@@ -71,7 +72,7 @@ public class HiddenTesla extends Building{
 		return new HiddenTeslaPanel(this);
 	}
 	
-	public enum specsHiddentesla implements BuildingSpecs{
+	public enum specsHiddentesla implements DefensiveBuildingSpecs{
 		lv1(new Gold(1000000),1440,293,600,7),
 		lv2(new Gold(1250000),4320,509,630,7),
 		lv3(new Gold(1500000),7200,657,660,7),
@@ -112,5 +113,41 @@ public class HiddenTesla extends Building{
 		public int getMinTownhallLevel() {
 			return level;
 		}
+		@Override
+		public int getRange() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		@Override
+		public double getAttackSpeed() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		@Override
+		public double getDamagePerShot() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+	}
+
+	@Override
+	public double getDamagePerShot() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public void Shoot(Location loc) {
+		// hier moet niks
+		
+	}
+	@Override
+	public int getRange() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public double getAttackSpeed() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

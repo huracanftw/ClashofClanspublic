@@ -73,11 +73,7 @@ public class CannonPanel implements BuildingPanel{
 		UpgradeMeta.setLore(list2);
 		Upgrade.setItemMeta(UpgradeMeta);
 		inv2.setItem(0, Info);
-<<<<<<< HEAD
 		inv2.setItem(8, Upgrade);
-=======
-		inv2.setItem(8, Info);
->>>>>>> FETCH_HEAD
 		
 		if(building.isUpgrading() == true){
 			inv2.setItem(7, Speed);

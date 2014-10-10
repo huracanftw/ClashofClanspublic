@@ -8,14 +8,15 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 
 import me.crolemol.coc.Coc;
-import me.crolemol.coc.arena.building.interfaces.Building;
 import me.crolemol.coc.arena.building.interfaces.BuildingPanel;
 import me.crolemol.coc.arena.building.interfaces.BuildingSpecs;
+import me.crolemol.coc.arena.building.interfaces.DefensiveBuilding;
+import me.crolemol.coc.arena.building.interfaces.DefensiveBuildingSpecs;
 import me.crolemol.coc.arena.panels.buildingpanels.ArcherTowerPanel;
 import me.crolemol.coc.economy.Gold;
 import me.crolemol.coc.economy.Resource;
 
-public class ArcherTower extends Building{
+public class ArcherTower extends DefensiveBuilding{
 
 	protected ArcherTower(OfflinePlayer owner, Location loc, int level,
 			int BuildingID, boolean isreal) {
@@ -73,7 +74,7 @@ public class ArcherTower extends Building{
 		return new ArcherTowerPanel(this);
 	}
 	
-	public enum specsArchertower implements BuildingSpecs{
+	public enum specsArchertower implements DefensiveBuildingSpecs{
 		lv1(new Gold(1000),15,30,400,2),
 		lv2(new Gold(2000),30,42,450,2),
 		lv3(new Gold(5000),45,51,500,3),
@@ -119,5 +120,41 @@ public class ArcherTower extends Building{
 		public int getMinTownhallLevel() {
 			return level;
 		}
+		@Override
+		public int getRange() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		@Override
+		public double getAttackSpeed() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		@Override
+		public double getDamagePerShot() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+	}
+
+	@Override
+	public double getDamagePerShot() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public void Shoot(Location loc) {
+		// hier moet niks
+		
+	}
+	@Override
+	public int getRange() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public double getAttackSpeed() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

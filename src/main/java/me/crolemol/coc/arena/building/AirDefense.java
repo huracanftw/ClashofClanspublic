@@ -4,9 +4,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import me.crolemol.coc.Coc;
-import me.crolemol.coc.arena.building.interfaces.Building;
 import me.crolemol.coc.arena.building.interfaces.BuildingPanel;
 import me.crolemol.coc.arena.building.interfaces.BuildingSpecs;
+import me.crolemol.coc.arena.building.interfaces.DefensiveBuilding;
+import me.crolemol.coc.arena.building.interfaces.DefensiveBuildingSpecs;
 import me.crolemol.coc.arena.panels.buildingpanels.AirDefensePanel;
 import me.crolemol.coc.economy.Gold;
 import me.crolemol.coc.economy.Resource;
@@ -15,7 +16,7 @@ import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 
-public class AirDefense extends Building{
+public class AirDefense extends DefensiveBuilding{
 
 	protected AirDefense(OfflinePlayer owner, Location loc, int level,
 			int BuildingID, boolean isreal) {
@@ -71,7 +72,7 @@ public class AirDefense extends Building{
 		return new AirDefensePanel(this);
 	}
 	
-	public enum specsAirDefense implements BuildingSpecs{
+	public enum specsAirDefense implements DefensiveBuildingSpecs{
 		lv1(new Gold(22500),300,134,800,4),
 		lv2(new Gold(90000),1440,293,860,4),
 		lv3(new Gold(270000),4320,509,900,5),
@@ -112,5 +113,41 @@ public class AirDefense extends Building{
 		public int getMinTownhallLevel() {
 			return level;
 		}
+		@Override
+		public int getRange() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		@Override
+		public double getAttackSpeed() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		@Override
+		public double getDamagePerShot() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+	}
+
+	@Override
+	public double getDamagePerShot() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public void Shoot(Location loc) {
+		// hier moet niks
+		
+	}
+	@Override
+	public int getRange() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public double getAttackSpeed() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

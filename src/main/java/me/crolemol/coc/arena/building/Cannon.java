@@ -1,6 +1,5 @@
 package me.crolemol.coc.arena.building;
 
-<<<<<<< HEAD
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -9,19 +8,15 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 
 import me.crolemol.coc.Coc;
-=======
-import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
-
->>>>>>> FETCH_HEAD
-import me.crolemol.coc.arena.building.interfaces.Building;
 import me.crolemol.coc.arena.building.interfaces.BuildingPanel;
 import me.crolemol.coc.arena.building.interfaces.BuildingSpecs;
+import me.crolemol.coc.arena.building.interfaces.DefensiveBuilding;
+import me.crolemol.coc.arena.building.interfaces.DefensiveBuildingSpecs;
 import me.crolemol.coc.arena.panels.buildingpanels.CannonPanel;
 import me.crolemol.coc.economy.Gold;
 import me.crolemol.coc.economy.Resource;
 
-public class Cannon extends Building{
+public class Cannon extends DefensiveBuilding{
 
 	protected Cannon(OfflinePlayer owner, Location loc, int level,
 			int BuildingID, boolean isreal) {
@@ -30,7 +25,6 @@ public class Cannon extends Building{
 	public Cannon(int Level){
 		super(Level);
 	}
-<<<<<<< HEAD
 	
 	public static Cannon getCannon(int BuildingID, OfflinePlayer owner) {
 		if (BuildingID == 0) {
@@ -62,8 +56,6 @@ public class Cannon extends Building{
 		return new Cannon(owner, new Location(world, x, y, z), level,
 				BuildingID, true);
 	}
-=======
->>>>>>> FETCH_HEAD
 
 	@Override
 	public String getBuildingName() {
@@ -80,7 +72,7 @@ public class Cannon extends Building{
 		return new CannonPanel(this);
 	}
 	
-	public enum specsCannon implements BuildingSpecs{
+	public enum specsCannon implements DefensiveBuildingSpecs{
 		lv1(new Gold(250),1,7,400,1),
 		lv2(new Gold(1000),15,30,450,1),
 		lv3(new Gold(4000),45,51,500,2),
@@ -125,5 +117,41 @@ public class Cannon extends Building{
 		public int getMinTownhallLevel() {
 			return level;
 		}
+		@Override
+		public int getRange() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		@Override
+		public double getAttackSpeed() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		@Override
+		public double getDamagePerShot() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+	}
+
+	@Override
+	public double getDamagePerShot() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public void Shoot(Location loc) {
+		//hier moet niks
+		
+	}
+	@Override
+	public int getRange() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public double getAttackSpeed() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }
